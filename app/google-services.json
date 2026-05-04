@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "571658465389",
+    "project_id": "smartlife-5822f",
+    "storage_bucket": "smartlife-5822f.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:571658465389:android:124da487418621e824cf64",
+        "android_client_info": {
+          "package_name": "com.ABenhadar.smartlife"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCvMdmVOQtMKhXfJ52FjTaJ_n7iFJHmtJs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
