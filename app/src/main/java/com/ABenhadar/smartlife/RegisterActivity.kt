@@ -20,35 +20,49 @@ class RegisterActivity : AppCompatActivity() {
 
         auth = FirebaseAuth.getInstance()
 
+        val etFirstName = findViewById<EditText>(R.id.etFirstName)
+        val etLastName = findViewById<EditText>(R.id.etLastName)
+        val etBirthDate = findViewById<EditText>(R.id.etBirthDate)
         val etEmail = findViewById<EditText>(R.id.etEmail)
         val etPassword = findViewById<EditText>(R.id.etPassword)
         val etConfirmPassword = findViewById<EditText>(R.id.etConfirmPassword)
         val btnRegister = findViewById<Button>(R.id.btnRegister)
         val tvLogin = findViewById<TextView>(R.id.tvLogin)
-        val progressBar = ProgressBar(this) // Idéalement présent dans votre XML
+        val progressBar = findViewById<ProgressBar>(R.id.progressBar)
 
-        // Observer les messages de succès du backend
+        // Observe loading state
+        viewModel.isLoading.observe(this) { isLoading ->
+            progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
+            btnRegister.isEnabled = !isLoading
+        }
+
+        // Observe success message from backend
         viewModel.successMessage.observe(this) { message ->
             if (message != null) {
                 Toast.makeText(this, message, Toast.LENGTH_LONG).show()
+                viewModel.clearMessages()
                 startActivity(Intent(this, MainActivity::class.java))
                 finish()
             }
         }
 
-        // Observer les erreurs du backend
+        // Observe error message from backend
         viewModel.errorMessage.observe(this) { error ->
             if (error != null) {
-                Toast.makeText(this, "Backend Error: $error", Toast.LENGTH_LONG).show()
+                Toast.makeText(this, "Error: $error", Toast.LENGTH_LONG).show()
+                viewModel.clearMessages()
             }
         }
 
         btnRegister.setOnClickListener {
-            val email = etEmail.text.toString()
+            val firstName = etFirstName.text.toString().trim()
+            val lastName = etLastName.text.toString().trim()
+            val birthDate = etBirthDate.text.toString().trim()
+            val email = etEmail.text.toString().trim()
             val password = etPassword.text.toString()
             val confirmPassword = etConfirmPassword.text.toString()
 
-            if (email.isEmpty() || password.isEmpty()) {
+            if (firstName.isEmpty() || lastName.isEmpty() || birthDate.isEmpty() || email.isEmpty() || password.isEmpty()) {
                 Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
@@ -58,23 +72,29 @@ class RegisterActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            // 1. Inscription Firebase
+            // 1. Firebase Authentication Registration
+            // We set loading manually here as Firebase is an external task
+            progressBar.visibility = View.VISIBLE
+            btnRegister.isEnabled = false
+
             auth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this) { task ->
                     if (task.isSuccessful) {
                         val user = auth.currentUser
-                        // 2. Inscription MongoDB via le Backend
+                        // 2. Backend Registration (FastAPI -> MongoDB)
                         user?.let {
                             viewModel.registerUser(
                                 uid = it.uid,
                                 email = email,
-                                firstName = "New", // À remplacer par des champs de saisie réels
-                                lastName = "User",
-                                birthDate = "2000-01-01"
+                                firstName = firstName,
+                                lastName = lastName,
+                                birthDate = birthDate
                             )
                         }
                     } else {
-                        Toast.makeText(this, "Auth failed: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
+                        progressBar.visibility = View.GONE
+                        btnRegister.isEnabled = true
+                        Toast.makeText(this, "Firebase Auth failed: ${task.exception?.message}", Toast.LENGTH_LONG).show()
                     }
                 }
         }

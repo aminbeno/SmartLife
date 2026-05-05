@@ -4,9 +4,21 @@
 
 ### Start the Server
 
+1. Navigate to the backend directory:
+```powershell
+cd C:\Users\dell\AndroidStudioProjects\SmartLife\SmartLife
+```
+
+2. Activate the virtual environment:
+```powershell
+# PowerShell
+.\.venv\Scripts\Activate.ps1
+# CMD
+.venv\Scripts\activate
+```
+
+3. Run the server:
 ```bash
-cd c:\Users\dell\Desktop\SmartLife
-.venv\Scripts\activate  # If not already activated
 uvicorn main:app --reload --host 0.0.0.0 --port 8000
 ```
 
@@ -22,135 +34,56 @@ The API will be available at: **http://localhost:8000**
 | Method | Endpoint                 | Purpose                 |
 | ------ | ------------------------ | ----------------------- |
 | GET    | `/health`                | Check API status        |
-| POST   | `/api/register_user`     | Create new user         |
+| POST   | `/api/register_user`     | Create new user in DB   |
 | GET    | `/api/get_user/{uid}`    | Retrieve user data      |
 | PUT    | `/api/update_user/{uid}` | Update user information |
 | DELETE | `/api/delete_user/{uid}` | Delete user             |
 
 ## 📱 For Your Kotlin Mobile App
 
-### Base URL
+### Hybrid Authentication Flow
+The app uses a dual-registration approach:
+1. **Firebase Auth**: Manages credentials (Email/Password) and provides a unique `uid`.
+2. **FastAPI Backend**: Stores profile data (Name, BirthDate) linked by the Firebase `uid`.
 
+### Base URL (RetrofitClient.kt)
 ```kotlin
-const val API_BASE_URL = "http://your-server-ip:8000/"
-```
-
-### Retrofit Interface Example
-
-```kotlin
-interface SmartLifeApiService {
-    @POST("api/register_user")
-    suspend fun registerUser(@Body user: UserData): Response<SuccessResponse>
-
-    @GET("api/get_user/{uid}")
-    suspend fun getUser(@Path("uid") uid: String): Response<UserResponse>
-
-    @PUT("api/update_user/{uid}")
-    suspend fun updateUser(
-        @Path("uid") uid: String,
-        @Body user: UserData
-    ): Response<SuccessResponse>
-
-    @DELETE("api/delete_user/{uid}")
-    suspend fun deleteUser(@Path("uid") uid: String): Response<SuccessResponse>
-}
-```
-
-### Data Classes for Kotlin
-
-```kotlin
-data class UserData(
-    val uid: String,
-    val email: String,
-    val firstName: String,
-    val lastName: String,
-    val birthDate: String
-)
-
-data class SuccessResponse(
-    val status: String,
-    val message: String,
-    val data: Map<String, Any>? = null
-)
-
-data class UserResponse(
-    val uid: String,
-    val email: String,
-    val firstName: String,
-    val lastName: String,
-    val birthDate: String,
-    val _id: String? = null
-)
+// In RetrofitClient.kt
+private const val BASE_URL = "http://10.0.2.2:8000/" // For Android Emulator
 ```
 
 ## 🔧 Configuration
 
 ### .env File
-
-Located at: `c:\Users\dell\Desktop\SmartLife\.env`
+Located at: `C:\Users\dell\AndroidStudioProjects\SmartLife\SmartLife\.env`
 
 Key settings:
-
 - `MONGODB_URL` - MongoDB connection string
-- `DATABASE_NAME` - Database name
-- `API_PORT` - Server port (default: 8000)
+- `DATABASE_NAME` - Database name (e.g., smartlife_db)
 
 ## 📁 Project Structure
-
 ```
-SmartLife/
-├── main.py              # FastAPI app setup
-├── models.py            # Data models (Pydantic)
-├── database.py          # MongoDB connection
-├── routes/
-│   ├── __init__.py
-│   └── user_routes.py   # User endpoints
-├── requirements.txt     # Python dependencies
-├── .env                 # Configuration
-├── .venv/              # Virtual environment
-├── README.md           # Full documentation
-└── TEST_RESULTS.md     # Test results
+SmartLife/ (Root)
+├── app/                  # Android Project (Kotlin)
+└── SmartLife/ (Backend)  # FastAPI Backend
+    ├── main.py           # FastAPI entry point
+    ├── models.py         # Pydantic models
+    ├── routes/           # API routes
+    ├── .env              # Backend config
+    └── .venv/            # Python Virtual Env
 ```
-
-## ✅ Status
-
-✅ API fully functional  
-✅ All CRUD operations working  
-✅ Error handling implemented  
-✅ MongoDB integration verified  
-✅ CORS enabled for mobile access  
-✅ Ready for Kotlin app integration
 
 ## 🐛 Troubleshooting
 
-**MongoDB Connection Error?**
-
-- Ensure MongoDB is running: `mongod`
-- Check `MONGODB_URL` in `.env`
-
-**Port 8000 already in use?**
-
-- Change `API_PORT` in `.env` or use:
-  ```bash
-  uvicorn main:app --port 8001
-  ```
-
-**Module not found errors?**
-
-- Reinstall dependencies:
-  ```bash
-  pip install -r requirements.txt
-  ```
-
-## 📞 Next Steps
-
-1. ✅ Set up MongoDB (if not already done)
-2. ✅ Configure `.env` for your environment
-3. ✅ Start the API server
-4. ✅ Connect from your Kotlin mobile app
-5. ✅ Deploy to production with proper security measures
+**Fatal error in launcher (venv)?**
+If you moved the project, recréate the venv in PowerShell:
+```powershell
+Remove-Item -Recurse -Force .venv
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+```
 
 ---
-
-**Created:** May 4, 2026  
-**Backend Status:** Production Ready ✅
+**Last Updated:** May 2026
+**Status:** Integrated with Firebase Auth ✅
