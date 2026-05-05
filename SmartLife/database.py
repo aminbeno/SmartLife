@@ -9,7 +9,13 @@ DATABASE_NAME = os.getenv("DATABASE_NAME", "SmartLifeDB")
 
 client = AsyncIOMotorClient(MONGODB_URL)
 db: AsyncIOMotorDatabase = client[DATABASE_NAME]
+
+# Collections
 users_collection = db["users"]
+activities_collection = db["activities"]
+habits_collection = db["habits"]
+recommendations_collection = db["recommendations"]
+voice_logs_collection = db["voice_logs"]
 
 async def get_database():
     """Get database connection"""

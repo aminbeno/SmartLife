@@ -1,23 +1,14 @@
 from pydantic import BaseModel, EmailStr, Field
-from typing import Optional
+from typing import Optional, List, Dict
+from datetime import datetime
 
+# --- User Models ---
 class UserData(BaseModel):
-    uid: str = Field(..., min_length=1, description="Unique user ID")
-    email: EmailStr = Field(..., description="User email address")
-    firstName: str = Field(..., min_length=1, description="First name")
-    lastName: str = Field(..., min_length=1, description="Last name")
-    birthDate: str = Field(..., description="Birth date (YYYY-MM-DD format)")
-
-    class Config:
-        json_schema_extra = {
-            "example": {
-                "uid": "user123",
-                "email": "user@example.com",
-                "firstName": "John",
-                "lastName": "Doe",
-                "birthDate": "1990-01-15"
-            }
-        }
+    uid: str = Field(..., min_length=1)
+    email: EmailStr
+    firstName: str
+    lastName: str
+    birthDate: str
 
 class UserResponse(BaseModel):
     uid: str
@@ -25,14 +16,52 @@ class UserResponse(BaseModel):
     firstName: str
     lastName: str
     birthDate: str
-    _id: Optional[str] = None
+    id: Optional[str] = Field(None, alias="_id")
 
+# --- Activities Models ---
+class Location(BaseModel):
+    lat: float
+    lng: float
+
+class ActivityData(BaseModel):
+    user_id: str
+    type: str  # e.g., "walking", "running"
+    location: Location
+    timestamp: datetime = Field(default_factory=datetime.utcnow)
+    duration: int  # in minutes
+
+# --- Habits Models ---
+class FrequentPlace(BaseModel):
+    name: str
+    lat: float
+    lng: float
+    visits: int
+
+class HabitData(BaseModel):
+    user_id: str
+    frequent_places: List[FrequentPlace]
+    active_hours: List[str]  # e.g., ["08:00", "18:00"]
+
+# --- Recommendations Models ---
+class RecommendationData(BaseModel):
+    user_id: str
+    message: str
+    type: str  # e.g., "health", "activity"
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+# --- Voice Logs Models ---
+class VoiceLogData(BaseModel):
+    user_id: str
+    input: str
+    response: str
+    timestamp: datetime = Field(default_factory=datetime.utcnow)
+
+# --- Generic Response ---
 class SuccessResponse(BaseModel):
     status: str = "success"
     message: str
-    data: Optional[dict] = None
+    data: Optional[Dict] = None
 
 class ErrorResponse(BaseModel):
     status: str = "error"
     message: str
-    code: Optional[str] = None
