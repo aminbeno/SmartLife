@@ -46,9 +46,13 @@ dependencies {
     // Firebase
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.auth)
+    implementation(libs.firebase.messaging)
 
     // Google Play Services Location
     implementation(libs.play.services.location)
+
+    // OSMDroid
+    implementation(libs.osmdroid.android)
 
     // Retrofit & Networking
     implementation(libs.retrofit)

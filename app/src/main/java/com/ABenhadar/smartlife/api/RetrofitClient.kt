@@ -10,27 +10,35 @@ import java.util.concurrent.TimeUnit
 
 object RetrofitClient {
 
-    // For local testing on emulator, 10.0.2.2 points to your computer's localhost
-    private const val BASE_URL = "http://10.0.2.2:8000/"
+    // IMPORTANT : Remplacez "10.0.2.2" par votre adresse IP locale (ex: "192.168.1.15")
+    // pour que votre téléphone réel puisse se connecter.
+    private const val LOCAL_IP = "10.0.2.2" 
+    private const val BASE_URL = "http://$LOCAL_IP:8000/"
 
-    private val gson: Gson = GsonBuilder()
-        .setLenient()
-        .create()
+    private val gson: Gson by lazy {
+        GsonBuilder()
+            .setLenient()
+            .create()
+    }
 
-    private val httpClient = OkHttpClient.Builder()
-        .connectTimeout(30, TimeUnit.SECONDS)
-        .readTimeout(30, TimeUnit.SECONDS)
-        .writeTimeout(30, TimeUnit.SECONDS)
-        .addInterceptor(HttpLoggingInterceptor().apply {
-            level = HttpLoggingInterceptor.Level.BODY
-        })
-        .build()
+    private val httpClient: OkHttpClient by lazy {
+        OkHttpClient.Builder()
+            .connectTimeout(30, TimeUnit.SECONDS)
+            .readTimeout(30, TimeUnit.SECONDS)
+            .writeTimeout(30, TimeUnit.SECONDS)
+            .addInterceptor(HttpLoggingInterceptor().apply {
+                level = HttpLoggingInterceptor.Level.BODY
+            })
+            .build()
+    }
 
-    private val retrofit = Retrofit.Builder()
-        .baseUrl(BASE_URL)
-        .client(httpClient)
-        .addConverterFactory(GsonConverterFactory.create(gson))
-        .build()
+    private val retrofit: Retrofit by lazy {
+        Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .client(httpClient)
+            .addConverterFactory(GsonConverterFactory.create(gson))
+            .build()
+    }
 
     fun getApiService(): SmartLifeApiService {
         return retrofit.create(SmartLifeApiService::class.java)

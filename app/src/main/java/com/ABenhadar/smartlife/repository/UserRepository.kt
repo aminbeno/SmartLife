@@ -1,6 +1,7 @@
 package com.ABenhadar.smartlife.repository
 
 import com.ABenhadar.smartlife.api.RetrofitClient
+import com.ABenhadar.smartlife.models.FcmTokenUpdate
 import com.ABenhadar.smartlife.models.UserData
 import com.ABenhadar.smartlife.models.UserResponse
 import kotlinx.coroutines.Dispatchers
@@ -44,9 +45,9 @@ class UserRepository {
         }
     }
 
-    suspend fun deleteUser(uid: String): Result<String> = withContext(Dispatchers.IO) {
+    suspend fun updateUserFCMToken(uid: String, token: String): Result<String> = withContext(Dispatchers.IO) {
         try {
-            val response = apiService.deleteUser(uid)
+            val response = apiService.updateUserFCMToken(uid, FcmTokenUpdate(token))
             if (response.status == "success") {
                 Result.success(response.message)
             } else {

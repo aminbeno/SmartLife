@@ -2,22 +2,35 @@ package com.ABenhadar.smartlife
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.*
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import com.ABenhadar.smartlife.viewmodel.UserViewModel
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.messaging.FirebaseMessaging
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class RegisterActivity : AppCompatActivity() {
 
-    private lateinit var auth: FirebaseAuth
+    private var auth: FirebaseAuth? = null
     private val viewModel: UserViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_register)
 
+        // On retarde l'initialisation pour éviter de figer le System UI au lancement
+        lifecycleScope.launch {
+            delay(500)
+            setupRegisterLogic()
+        }
+    }
+
+    private fun setupRegisterLogic() {
         auth = FirebaseAuth.getInstance()
 
         val etFirstName = findViewById<EditText>(R.id.etFirstName)
@@ -30,23 +43,27 @@ class RegisterActivity : AppCompatActivity() {
         val tvLogin = findViewById<TextView>(R.id.tvLogin)
         val progressBar = findViewById<ProgressBar>(R.id.progressBar)
 
-        // Observe loading state
         viewModel.isLoading.observe(this) { isLoading ->
             progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
             btnRegister.isEnabled = !isLoading
         }
 
-        // Observe success message from backend
         viewModel.successMessage.observe(this) { message ->
             if (message != null) {
-                Toast.makeText(this, message, Toast.LENGTH_LONG).show()
+                Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
                 viewModel.clearMessages()
-                startActivity(Intent(this, MainActivity::class.java))
-                finish()
+                updateFCMToken()
+                
+                lifecycleScope.launch {
+                    delay(500)
+                    val intent = Intent(this@RegisterActivity, MainActivity::class.java)
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                    startActivity(intent)
+                    finish()
+                }
             }
         }
 
-        // Observe error message from backend
         viewModel.errorMessage.observe(this) { error ->
             if (error != null) {
                 Toast.makeText(this, "Error: $error", Toast.LENGTH_LONG).show()
@@ -55,46 +72,37 @@ class RegisterActivity : AppCompatActivity() {
         }
 
         btnRegister.setOnClickListener {
-            val firstName = etFirstName.text.toString().trim()
-            val lastName = etLastName.text.toString().trim()
-            val birthDate = etBirthDate.text.toString().trim()
             val email = etEmail.text.toString().trim()
             val password = etPassword.text.toString()
-            val confirmPassword = etConfirmPassword.text.toString()
-
-            if (firstName.isEmpty() || lastName.isEmpty() || birthDate.isEmpty() || email.isEmpty() || password.isEmpty()) {
+            
+            if (email.isEmpty() || password.isEmpty() || etConfirmPassword.text.isEmpty()) {
                 Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            if (password != confirmPassword) {
+            if (password != etConfirmPassword.text.toString()) {
                 Toast.makeText(this, "Passwords do not match", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            // 1. Firebase Authentication Registration
-            // We set loading manually here as Firebase is an external task
             progressBar.visibility = View.VISIBLE
             btnRegister.isEnabled = false
 
-            auth.createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this) { task ->
+            auth?.createUserWithEmailAndPassword(email, password)
+                ?.addOnCompleteListener(this) { task ->
                     if (task.isSuccessful) {
-                        val user = auth.currentUser
-                        // 2. Backend Registration (FastAPI -> MongoDB)
-                        user?.let {
+                        auth?.currentUser?.let {
                             viewModel.registerUser(
-                                uid = it.uid,
-                                email = email,
-                                firstName = firstName,
-                                lastName = lastName,
-                                birthDate = birthDate
+                                it.uid, email, 
+                                etFirstName.text.toString().trim(), 
+                                etLastName.text.toString().trim(), 
+                                etBirthDate.text.toString().trim()
                             )
                         }
                     } else {
                         progressBar.visibility = View.GONE
                         btnRegister.isEnabled = true
-                        Toast.makeText(this, "Firebase Auth failed: ${task.exception?.message}", Toast.LENGTH_LONG).show()
+                        Toast.makeText(this, "Auth failed: ${task.exception?.message}", Toast.LENGTH_LONG).show()
                     }
                 }
         }
@@ -102,6 +110,19 @@ class RegisterActivity : AppCompatActivity() {
         tvLogin.setOnClickListener {
             startActivity(Intent(this, LoginActivity::class.java))
             finish()
+        }
+    }
+
+    private fun updateFCMToken() {
+        try {
+            val userId = auth?.currentUser?.uid ?: return
+            FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    viewModel.updateFCMToken(userId, task.result)
+                }
+            }
+        } catch (e: Exception) {
+            Log.e("RegisterActivity", "FCM Token error: ${e.message}")
         }
     }
 }

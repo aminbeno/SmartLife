@@ -78,6 +78,39 @@ class UserViewModel : ViewModel() {
         }
     }
 
+    fun updateUser(uid: String, email: String, firstName: String, lastName: String, birthDate: String) {
+        viewModelScope.launch {
+            _isLoading.value = true
+            _errorMessage.value = null
+
+            val user = UserData(uid, email, firstName, lastName, birthDate)
+            repository.updateUser(uid, user)
+                .onSuccess { message ->
+                    _successMessage.value = "Profile updated successfully"
+                    // Refresh current user
+                    getUser(uid)
+                }
+                .onFailure { error ->
+                    _errorMessage.value = error.message ?: "Update failed"
+                    _isLoading.value = false
+                }
+        }
+    }
+
+    fun updateFCMToken(uid: String, token: String) {
+        viewModelScope.launch {
+            repository.updateUserFCMToken(uid, token)
+                .onSuccess { _ ->
+                    // Log success or do nothing, as it's a background update
+                    // _successMessage.postValue("FCM token updated")
+                }
+                .onFailure { error ->
+                    // Log error, but don't necessarily show to user for a background task
+                    // _errorMessage.postValue("Failed to update FCM token: ${error.message}")
+                }
+        }
+    }
+
     fun clearMessages() {
         _errorMessage.value = null
         _successMessage.value = null

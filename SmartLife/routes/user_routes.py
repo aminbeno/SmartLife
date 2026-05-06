@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, status
 from models import (
     UserData, UserResponse, SuccessResponse, ErrorResponse,
-    ActivityData, HabitData, RecommendationData, VoiceLogData
+    ActivityData, HabitData, RecommendationData, VoiceLogData, FcmTokenUpdate
 )
 from database import (
     users_collection, activities_collection, habits_collection,
@@ -29,6 +29,26 @@ async def get_user(uid: str):
         raise HTTPException(status_code=404, detail="User not found")
     user["_id"] = str(user["_id"])
     return user
+
+@router.put("/update_user/{uid}", response_model=SuccessResponse)
+async def update_user(uid: str, user: UserData):
+    result = await users_collection.update_one(
+        {"uid": uid},
+        {"$set": user.model_dump(exclude={"uid"})}
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="User not found")
+    return {"status": "success", "message": "User updated successfully"}
+
+@router.put("/user/{uid}/fcm-token", response_model=SuccessResponse)
+async def update_user_fcm_token(uid: str, token_update: FcmTokenUpdate):
+    result = await users_collection.update_one(
+        {"uid": uid},
+        {"$set": {"fcmToken": token_update.fcmToken}}
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="User not found")
+    return {"status": "success", "message": "FCM token updated successfully"}
 
 # --- ACTIVITY ENDPOINTS ---
 
@@ -58,6 +78,12 @@ async def get_habits(user_id: str):
 async def add_recommendation(rec: RecommendationData):
     result = await recommendations_collection.insert_one(rec.model_dump())
     return {"status": "success", "message": "Recommendation saved", "data": {"id": str(result.inserted_id)}}
+
+@router.get("/recommendations/{user_id}", response_model=List[RecommendationData])
+async def get_recommendations(user_id: str):
+    cursor = recommendations_collection.find({"user_id": user_id})
+    recs = await cursor.to_list(length=50)
+    return recs
 
 # --- VOICE ENDPOINTS ---
 

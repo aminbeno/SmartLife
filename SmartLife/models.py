@@ -9,6 +9,7 @@ class UserData(BaseModel):
     firstName: str
     lastName: str
     birthDate: str
+    fcmToken: Optional[str] = None
 
 class UserResponse(BaseModel):
     uid: str
@@ -16,7 +17,11 @@ class UserResponse(BaseModel):
     firstName: str
     lastName: str
     birthDate: str
+    fcmToken: Optional[str] = None
     id: Optional[str] = Field(None, alias="_id")
+
+class FcmTokenUpdate(BaseModel):
+    fcmToken: str
 
 # --- Activities Models ---
 class Location(BaseModel):

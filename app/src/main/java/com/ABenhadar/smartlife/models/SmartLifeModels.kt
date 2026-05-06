@@ -21,6 +21,9 @@ data class UserResponse(
     val id: String? = null
 )
 
+// Model for updating FCM token
+data class FcmTokenUpdate(val fcmToken: String)
+
 // --- Activities Models ---
 data class Location(
     val lat: Double,
