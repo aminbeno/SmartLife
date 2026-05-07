@@ -42,3 +42,8 @@ async def health_check():
         "message": "API is healthy",
         "data": {"service": "SmartLife API", "status": "online"}
     }
+
+if __name__ == "__main__":
+    import uvicorn
+    # Écouter sur 0.0.0.0 pour accepter les connexions du téléphone réel
+    uvicorn.run(app, host="0.0.0.0", port=8000)
