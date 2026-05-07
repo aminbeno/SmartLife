@@ -4,28 +4,42 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="24dp">
+    android:background="?attr/android:windowBackground"
+    android:padding="32dp">
 
-    <ImageView
-        android:id="@+id/ivLogo"
-        android:layout_width="120dp"
-        android:layout_height="120dp"
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cvLogoContainer"
+        android:layout_width="160dp"
+        android:layout_height="160dp"
         android:layout_marginTop="64dp"
-        android:src="@mipmap/ic_launcher"
-        android:contentDescription="SmartLife Logo"
+        app:cardCornerRadius="80dp"
+        app:cardElevation="0dp"
+        app:strokeWidth="0dp"
+        app:cardBackgroundColor="?attr/colorPrimaryContainer"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <ImageView
+            android:id="@+id/ivLogo"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_gravity="center"
+            android:src="@mipmap/ic_launcher_round"
+            android:contentDescription="SmartLife Logo" />
+    </com.google.android.material.card.MaterialCardView>
 
     <TextView
         android:id="@+id/tvTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="48dp"
         android:text="Bienvenue sur SmartLife"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        app:layout_constraintTop_toBottomOf="@id/ivLogo"
+        android:textSize="28sp"
+        android:fontFamily="sans-serif-medium"
+        android:textColor="?attr/colorOnSurface"
+        android:textAlignment="center"
+        app:layout_constraintTop_toBottomOf="@id/cvLogoContainer"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
@@ -35,16 +49,20 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:gravity="center"
-        android:text="SmartLife observe vos habitudes, analyse vos mouvements et vous recommande des actions pour améliorer votre quotidien."
+        android:text="Votre compagnon bienveillant qui observe vos habitudes pour vous aider à vivre mieux, pas à pas."
         android:textSize="16sp"
+        android:alpha="0.7"
+        android:textColor="?attr/colorOnSurfaceVariant"
         app:layout_constraintTop_toBottomOf="@id/tvTitle" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/btnNext"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="64dp"
         android:layout_marginBottom="32dp"
-        android:text="Commencer l'analyse"
+        android:text="Commencer l'aventure"
+        android:textSize="18sp"
+        app:cornerRadius="20dp"
         app:layout_constraintBottom_toBottomOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

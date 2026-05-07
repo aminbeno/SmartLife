@@ -49,4 +49,55 @@
     <string name="invalid_email">Invalid email</string>
     <string name="name_cannot_be_empty">Name cannot be empty</string>
     <string name="birth_date_cannot_be_empty">Birth date cannot be empty</string>
+
+    <!-- Reports Fragment Strings -->
+    <string name="reports_title">Votre Parcours</string>
+    <string name="reports_subtitle">Chaque petit pas compte pour votre bien-être.</string>
+    <string name="moment_of_pride">Moment de fierté</string>
+    <string name="pride_message_active">Vous avez été 15%% plus actif cette semaine. Continuez ainsi !</string>
+    <string name="long_term_trends">Tendances à long terme</string>
+    <string name="analysis_in_progress">Analyse en cours…</string>
+    <string name="preparing_charts_message">Nous préparons vos graphiques personnalisés. Revenez bientôt pour découvrir vos progrès !</string>
+    <string name="star_icon_desc">Étoile de réussite</string>
+    <string name="trends_icon_desc">Icône de tendances</string>
+
+    <!-- Home Fragment Strings -->
+    <string name="home_greeting">Bonjour !</string>
+    <string name="home_subtitle">Comment vous sentez-vous aujourd\'hui ?</string>
+    <string name="companion_advice_label">CONSEIL DE VOTRE COMPAGNON</string>
+    <string name="default_recommendation">Il fait beau ! Et si on allait marcher 10 minutes pour s\'aérer l\'esprit ?</string>
+    <string name="btn_lets_go">C\'est parti</string>
+    <string name="day_overview">Aperçu de votre journée</string>
+    <string name="home_time_label">Temps Maison</string>
+    <string name="activity_label">Activité</string>
+
+    <!-- Login/Register Strings -->
+    <string name="login_welcome_back">Ravi de vous revoir !</string>
+    <string name="login_subtitle">Connectez-vous pour retrouver votre compagnon.</string>
+    <string name="login_button">Se connecter</string>
+    <string name="no_account_register">Pas encore de compte ? Créer un compte</string>
+    <string name="register_welcome">Bienvenue !</string>
+    <string name="register_subtitle">Créons votre profil pour commencer cette aventure ensemble.</string>
+    <string name="register_button">Créer mon compte</string>
+    <string name="already_have_account_login">Déjà un compte ? Connectez-vous</string>
+    <string name="password_hint">Mot de passe</string>
+    <string name="confirm_password_hint">Confirmer le mot de passe</string>
+
+    <!-- Settings Strings -->
+    <string name="settings_title">Paramètres</string>
+    <string name="settings_subtitle">Personnalisez votre expérience avec votre compagnon.</string>
+    <string name="preferences_header">Préférences</string>
+    <string name="smart_recommendations">Recommandations intelligentes</string>
+    <string name="well_being_header">Bien-être</string>
+    <string name="set_goals_label">Modifier mes objectifs quotidiens</string>
+    <string name="account_header">Compte</string>
+    <string name="manage_profile_label">Gérer mon profil</string>
+    <string name="logout_label">Se déconnecter</string>
+
+    <!-- Profile/Edit Strings -->
+    <string name="profile_subtitle">Vos informations personnelles en un coup d\'œil.</string>
+    <string name="edit_profile_subtitle">Mettez à jour vos informations pour une expérience plus précise.</string>
+    <string name="onboarding_title">Bienvenue sur SmartLife</string>
+    <string name="onboarding_desc">Votre compagnon bienveillant qui observe vos habitudes pour vous aider à vivre mieux, pas à pas.</string>
+    <string name="onboarding_button">Commencer l\'aventure</string>
 </resources>

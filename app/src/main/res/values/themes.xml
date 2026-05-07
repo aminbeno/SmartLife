@@ -1,8 +1,41 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Base.Theme.SmartLife" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+    <style name="Base.Theme.SmartLife" parent="Theme.Material3.Light.NoActionBar">
+        <!-- Couleurs Principales (Système de Design) -->
+        <!-- Primaire : Bleu-Vert apaisant -->
+        <item name="colorPrimary">@color/primary_color</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorPrimaryContainer">@color/primary_light</item>
+        <item name="colorOnPrimaryContainer">@color/primary_dark</item>
+
+        <!-- Secondaire : Orange doux (Réconfortant) -->
+        <item name="colorSecondary">@color/secondary_color</item>
+        <item name="colorOnSecondary">@color/white</item>
+        <item name="colorSecondaryContainer">@color/secondary_light</item>
+        <item name="colorOnSecondaryContainer">@color/secondary_dark</item>
+
+        <!-- Arrière-plans et Surfaces (Neutres) -->
+        <item name="android:windowBackground">@color/bg_light</item>
+        <item name="colorSurface">@color/white</item>
+        <item name="colorOnSurface">@color/text_main</item>
+        <item name="colorSurfaceVariant">#EEEEEE</item>
+        <item name="colorOnSurfaceVariant">@color/text_secondary</item>
+        <item name="colorOutlineVariant">@color/outline_variant</item>
+
+        <!-- Typographie (Moderne et Lisible) -->
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="textAppearanceTitleLarge">@style/TextAppearance.SmartLife.TitleLarge</item>
+        <item name="textAppearanceBodyMedium">@style/TextAppearance.SmartLife.BodyMedium</item>
+    </style>
+
+    <!-- Styles de Typographie Personnalisés -->
+    <style name="TextAppearance.SmartLife.TitleLarge" parent="TextAppearance.Material3.TitleLarge">
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/text_main</item>
+    </style>
+
+    <style name="TextAppearance.SmartLife.BodyMedium" parent="TextAppearance.Material3.BodyMedium">
+        <item name="android:textColor">@color/text_secondary</item>
     </style>
 
     <style name="Theme.SmartLife" parent="Base.Theme.SmartLife" />
