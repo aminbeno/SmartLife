@@ -1,9 +1,13 @@
 package com.ABenhadar.smartlife
 
 import android.Manifest
+import android.app.ActivityManager
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
+import android.location.Address
+import android.location.Geocoder
 import android.os.Bundle
 import android.speech.RecognitionListener
 import android.os.Bundle as SpeechBundle
@@ -13,15 +17,19 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.ABenhadar.smartlife.api.RetrofitClient
 import com.ABenhadar.smartlife.models.VoiceLogData
+import com.ABenhadar.smartlife.service.GpsTrackingService
+import com.google.android.material.button.MaterialButton
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.Dispatchers
@@ -34,6 +42,7 @@ import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.Polyline
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
+import java.io.IOException
 import java.util.*
 
 class ActivitiesFragment : Fragment() {
@@ -45,6 +54,11 @@ class ActivitiesFragment : Fragment() {
 
     private lateinit var speechRecognizer: SpeechRecognizer
     private lateinit var recognitionIntent: Intent
+    
+    private lateinit var btnStart: MaterialButton
+    private lateinit var btnStop: MaterialButton
+    private lateinit var searchView: SearchView
+    private var searchMarker: Marker? = null
 
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
@@ -66,6 +80,13 @@ class ActivitiesFragment : Fragment() {
 
         val fabVoice = view.findViewById<FloatingActionButton>(R.id.fabVoice)
         setupVoice(fabVoice)
+
+        btnStart = view.findViewById(R.id.btnStartTracking)
+        btnStop = view.findViewById(R.id.btnStopTracking)
+        searchView = view.findViewById(R.id.searchView)
+        
+        setupTrackingButtons()
+        setupSearchBar()
 
         view.findViewById<ImageButton>(R.id.btnCloseRec).setOnClickListener {
             view.findViewById<View>(R.id.cvRecommendation).visibility = View.GONE
@@ -91,6 +112,115 @@ class ActivitiesFragment : Fragment() {
 
         val startPoint = GeoPoint(48.8583, 2.2944)
         mapController.setCenter(startPoint)
+    }
+
+    private fun setupSearchBar() {
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                if (!query.isNullOrBlank()) {
+                    performSearch(query)
+                }
+                searchView.clearFocus()
+                return true
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                return false
+            }
+        })
+    }
+
+    private fun performSearch(locationName: String) {
+        val geocoder = Geocoder(requireContext(), Locale.getDefault())
+        lifecycleScope.launch(Dispatchers.IO) {
+            try {
+                val addressList: List<Address>? = geocoder.getFromLocationName(locationName, 1)
+                if (!addressList.isNullOrEmpty()) {
+                    val address = addressList[0]
+                    val geoPoint = GeoPoint(address.latitude, address.longitude)
+
+                    withContext(Dispatchers.Main) {
+                        // Remove previous search marker
+                        searchMarker?.let { map.overlays.remove(it) }
+                        
+                        // Add new marker
+                        searchMarker = Marker(map).apply {
+                            position = geoPoint
+                            title = address.getAddressLine(0) ?: locationName
+                            setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+                        }
+                        map.overlays.add(searchMarker)
+                        
+                        // Center map and zoom
+                        map.controller.animateTo(geoPoint)
+                        map.controller.setZoom(17.0)
+                        map.invalidate()
+                    }
+                } else {
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(requireContext(), "Lieu non trouvé", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            } catch (e: IOException) {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(requireContext(), "Erreur de recherche", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
+
+    private fun setupTrackingButtons() {
+        updateTrackingButtonsState()
+
+        btnStart.setOnClickListener {
+            startTracking()
+        }
+
+        btnStop.setOnClickListener {
+            stopTracking()
+        }
+    }
+
+    private fun startTracking() {
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            val intent = Intent(requireContext(), GpsTrackingService::class.java)
+            ContextCompat.startForegroundService(requireContext(), intent)
+            updateTrackingButtonsState()
+            Toast.makeText(requireContext(), "Tracking started", Toast.LENGTH_SHORT).show()
+        } else {
+            requestPermissionLauncher.launch(arrayOf(
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ))
+        }
+    }
+
+    private fun stopTracking() {
+        val intent = Intent(requireContext(), GpsTrackingService::class.java)
+        requireContext().stopService(intent)
+        updateTrackingButtonsState()
+        Toast.makeText(requireContext(), "Tracking stopped", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun updateTrackingButtonsState() {
+        val isRunning = isServiceRunning(GpsTrackingService::class.java)
+        if (isRunning) {
+            btnStart.visibility = View.GONE
+            btnStop.visibility = View.VISIBLE
+        } else {
+            btnStart.visibility = View.VISIBLE
+            btnStop.visibility = View.GONE
+        }
+    }
+
+    private fun isServiceRunning(serviceClass: Class<*>): Boolean {
+        val manager = requireContext().getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+        for (service in manager.getRunningServices(Int.MAX_VALUE)) {
+            if (serviceClass.name == service.service.className) {
+                return true
+            }
+        }
+        return false
     }
 
     private suspend fun loadHabits() {
@@ -195,6 +325,7 @@ class ActivitiesFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         map.onResume()
+        updateTrackingButtonsState()
     }
 
     override fun onPause() {

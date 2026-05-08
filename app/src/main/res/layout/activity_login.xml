@@ -15,15 +15,16 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
-            android:layout_width="80dp"
-            android:layout_height="80dp"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
             android:layout_marginBottom="24dp"
-            android:src="@mipmap/ic_launcher_round" />
+            android:src="@mipmap/ic_logo"
+            android:scaleType="centerInside" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Ravi de vous revoir !"
+            android:text="@string/login_welcome_back"
             android:textSize="24sp"
             android:fontFamily="sans-serif-medium"
             android:textColor="?attr/colorOnSurface" />
@@ -33,7 +34,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="40dp"
-            android:text="Connectez-vous pour retrouver votre compagnon."
+            android:text="@string/login_subtitle"
             android:alpha="0.7"
             android:textColor="?attr/colorOnSurfaceVariant"
             android:textAlignment="center" />
@@ -43,7 +44,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            android:hint="Email"
+            android:hint="@string/email_label"
             app:boxCornerRadiusBottomEnd="12dp"
             app:boxCornerRadiusBottomStart="12dp"
             app:boxCornerRadiusTopEnd="12dp"
@@ -61,7 +62,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="24dp"
-            android:hint="Mot de passe"
+            android:hint="@string/password_hint"
             app:boxCornerRadiusBottomEnd="12dp"
             app:boxCornerRadiusBottomStart="12dp"
             app:boxCornerRadiusTopEnd="12dp"
@@ -79,7 +80,7 @@
             android:id="@+id/btnLogin"
             android:layout_width="match_parent"
             android:layout_height="56dp"
-            android:text="Se connecter"
+            android:text="@string/login_button"
             app:cornerRadius="16dp" />
 
         <com.google.android.material.button.MaterialButton
@@ -88,7 +89,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="Pas encore de compte ? Créer un compte"
+            android:text="@string/no_account_register"
             android:textAllCaps="false" />
 
     </LinearLayout>
