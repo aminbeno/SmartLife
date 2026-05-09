@@ -35,7 +35,8 @@ data class ActivityData(
     val type: String,
     val location: Location,
     val timestamp: String? = null,
-    val duration: Int
+    val duration: Int,
+    val locationName: String? = null // Champ ajouté pour l'affichage du journal
 )
 
 // --- Habits Models ---

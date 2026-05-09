@@ -34,7 +34,7 @@ class ScheduleActivity : AppCompatActivity() {
     private val auth = FirebaseAuth.getInstance()
     private val apiService by lazy { RetrofitClient.getApiService() }
 
-    // Paire de (Nom technique pour la DB "Lundi", Titre affiché "Lun\n12 Mai")
+    // Paire de (Clé technique pour DB ex: "Lundi", Titre affiché ex: "LUN.\n12 MAI")
     private var weekDaysData: List<Pair<String, String>> = emptyList()
     private var currentWeeklySchedule = weeklySchedule("", emptyList())
     private var currentDayIndex = 0
@@ -44,14 +44,13 @@ class ScheduleActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_schedule)
 
-        // 1. Initialiser les dates réelles de la semaine
+        // 1. Initialiser les dates réelles de la semaine actuelle
         weekDaysData = generateWeekDates()
 
         val toolbar = findViewById<MaterialToolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
         toolbar.setNavigationOnClickListener { finish() }
 
-        // Bouton Calendrier pour changer de date
         findViewById<ImageButton>(R.id.btnCalendarPicker).setOnClickListener {
             showDatePicker()
         }
@@ -60,7 +59,8 @@ class ScheduleActivity : AppCompatActivity() {
         rvSchedule = findViewById(R.id.rvSchedule)
         fabAdd = findViewById(R.id.fabAddTask)
 
-        // --- CORRECTION CRASH : Toujours l'adapter AVANT les onglets ---
+        // --- CORRECTIONS CRASH ---
+        // On initialise d'abord l'adapter pour qu'il soit prêt lors de la sélection d'onglet
         setupRecyclerView()
         setupTabs()
 
@@ -71,15 +71,21 @@ class ScheduleActivity : AppCompatActivity() {
     }
 
     private fun generateWeekDates(): List<Pair<String, String>> {
-        val calendar = Calendar.getInstance()
+        val calendar = Calendar.getInstance(Locale.FRANCE)
         calendar.firstDayOfWeek = Calendar.MONDAY
+        
         // Aligner sur le Lundi de la semaine en cours
+        calendar.set(Calendar.HOUR_OF_DAY, 0)
+        calendar.set(Calendar.MINUTE, 0)
+        calendar.set(Calendar.SECOND, 0)
+        calendar.set(Calendar.MILLISECOND, 0)
+        
         while (calendar.get(Calendar.DAY_OF_WEEK) != Calendar.MONDAY) {
-            calendar.add(Calendar.DATE, -1)
+            calendar.add(Calendar.DAY_OF_MONTH, -1)
         }
         
         val displayFormat = SimpleDateFormat("EEE\nd MMM", Locale.getDefault())
-        // CORRECTION : Utiliser le Français pour les noms techniques afin de correspondre au serveur
+        // On utilise le Français pour la DB afin d'être cohérent avec l'ancienne structure
         val technicalFormat = SimpleDateFormat("EEEE", Locale.FRANCE) 
         
         val list = mutableListOf<Pair<String, String>>()
@@ -94,18 +100,15 @@ class ScheduleActivity : AppCompatActivity() {
             }
 
             list.add(technicalName to displayName)
-            calendar.add(Calendar.DAY_OF_YEAR, 1)
+            calendar.add(Calendar.DAY_OF_MONTH, 1)
         }
         return list
     }
 
     private fun setupTabs() {
         tabLayout.removeAllTabs()
-        weekDaysData.forEach { data ->
-            val tab = tabLayout.newTab().setText(data.second)
-            tabLayout.addTab(tab)
-        }
-
+        
+        // Listener ajouté AVANT les onglets pour capter la sélection par défaut
         tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab?) {
                 currentDayIndex = tab?.position ?: 0
@@ -115,7 +118,12 @@ class ScheduleActivity : AppCompatActivity() {
             override fun onTabReselected(tab: TabLayout.Tab?) {}
         })
 
-        // Sélectionner "Aujourd'hui" par son nom technique français
+        weekDaysData.forEach { data ->
+            val tab = tabLayout.newTab().setText(data.second)
+            tabLayout.addTab(tab)
+        }
+
+        // Sélection automatique d'aujourd'hui par son nom technique français
         val todayTech = SimpleDateFormat("EEEE", Locale.FRANCE).format(Date()).replaceFirstChar { it.uppercase() }
         val index = weekDaysData.indexOfFirst { it.first == todayTech }
         if (index != -1) {
@@ -157,6 +165,7 @@ class ScheduleActivity : AppCompatActivity() {
                     updateDayList()
                 }
             } catch (e: Exception) {
+                // Fallback avec les noms techniques en Français
                 val defaultDays = listOf("Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche")
                 currentWeeklySchedule = weeklySchedule(userId, defaultDays.map { DaySchedule(it) })
                 withContext(Dispatchers.Main) { updateDayList() }
@@ -182,7 +191,10 @@ class ScheduleActivity : AppCompatActivity() {
 
     private fun updateDayList() {
         if (!::adapter.isInitialized || weekDaysData.isEmpty()) return
+        if (currentDayIndex < 0 || currentDayIndex >= weekDaysData.size) return
+
         val technicalDayName = weekDaysData[currentDayIndex].first
+        // Recherche insensible à la casse pour assurer le mapping
         val daySchedule = currentWeeklySchedule.days.find { it.day_of_week.equals(technicalDayName, ignoreCase = true) }
         adapter.updateItems(daySchedule?.items ?: emptyList())
     }
@@ -199,6 +211,18 @@ class ScheduleActivity : AppCompatActivity() {
             TimePickerDialog(this, { _, hour, minute ->
                 etTime.setText(String.format(Locale.getDefault(), "%02d:%02d", hour, minute))
             }, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true).show()
+        }
+
+        etDuration.setOnClickListener {
+            val picker = NumberPicker(this)
+            picker.minValue = 5
+            picker.maxValue = 180
+            picker.value = 30
+            AlertDialog.Builder(this)
+                .setTitle("Durée (minutes)")
+                .setView(picker)
+                .setPositiveButton("Valider") { _, _ -> etDuration.setText(picker.value.toString()) }
+                .show()
         }
 
         spinnerType.adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, listOf("Walking", "Running", "Stationary", "Sport", "Repos"))

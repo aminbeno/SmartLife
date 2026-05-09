@@ -33,25 +33,33 @@ class ActivitiesAdapter : RecyclerView.Adapter<ActivitiesAdapter.ViewHolder>() {
         // Format timestamp
         activity.timestamp?.let {
             try {
+                // Pour les activités réelles (Format ISO)
                 val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
                 val outputFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
                 val date = inputFormat.parse(it)
-                holder.tvTime.text = date?.let { d -> outputFormat.format(d) } ?: "--:--"
+                holder.tvTime.text = date?.let { d -> outputFormat.format(d) } ?: it
             } catch (e: Exception) {
-                holder.tvTime.text = it.takeLast(5)
+                // Pour les activités planifiées (Format texte personnalisé)
+                holder.tvTime.text = it
             }
         }
 
         // Icon based on type
-        when (activity.type.lowercase()) {
-            "walking" -> holder.ivIcon.setImageResource(android.R.drawable.ic_menu_directions)
-            "running" -> holder.ivIcon.setImageResource(android.R.drawable.ic_menu_compass)
-            "stationary" -> holder.ivIcon.setImageResource(android.R.drawable.ic_menu_myplaces)
+        val typeLower = activity.type.lowercase()
+        when {
+            typeLower.contains("walking") || typeLower.contains("marche") -> holder.ivIcon.setImageResource(android.R.drawable.ic_menu_directions)
+            typeLower.contains("running") || typeLower.contains("course") -> holder.ivIcon.setImageResource(android.R.drawable.ic_menu_compass)
+            typeLower.contains("stationary") || typeLower.contains("repos") -> holder.ivIcon.setImageResource(android.R.drawable.ic_menu_myplaces)
             else -> holder.ivIcon.setImageResource(android.R.drawable.ic_menu_info_details)
         }
         
-        // Location placeholder (can be improved by looking up nearest named location)
-        holder.tvLocation.text = "Position: ${String.format("%.3f", activity.location.lat)}, ${String.format("%.3f", activity.location.lng)}"
+        // Affichage du lieu : Priorité au nom du lieu s'il existe (NamedLocation ou Planifié)
+        if (!activity.locationName.isNullOrEmpty()) {
+            holder.tvLocation.text = activity.locationName
+        } else {
+            // Sinon on affiche les coordonnées GPS
+            holder.tvLocation.text = String.format(Locale.getDefault(), "Position: %.3f, %.3f", activity.location.lat, activity.location.lng)
+        }
     }
 
     override fun getItemCount(): Int = activities.size

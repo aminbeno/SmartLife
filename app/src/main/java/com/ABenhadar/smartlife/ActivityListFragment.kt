@@ -12,6 +12,8 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.ABenhadar.smartlife.api.RetrofitClient
+import com.ABenhadar.smartlife.models.ActivityData
+import com.ABenhadar.smartlife.models.Location
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.Dispatchers
@@ -42,7 +44,7 @@ class ActivityListFragment : Fragment() {
             startActivity(intent)
         }
 
-        loadActivities()
+        loadAllData()
 
         return view
     }
@@ -53,23 +55,45 @@ class ActivityListFragment : Fragment() {
         rvActivities.adapter = adapter
     }
 
-    private fun loadActivities() {
+    private fun loadAllData() {
         val userId = auth.currentUser?.uid ?: return
         
         lifecycleScope.launch(Dispatchers.IO) {
             try {
+                // 1. Charger l'historique GPS réel
                 val activities = apiService.getActivities(userId)
-                withContext(Dispatchers.Main) {
-                    if (activities.isNotEmpty()) {
-                        adapter.updateActivities(activities.reversed())
-                    } else {
-                        Log.d("ActivityList", "No activities found")
+                
+                // 2. Charger le programme (Schedules)
+                val schedule = try { 
+                    apiService.getWeeklySchedule(userId) 
+                } catch (e: Exception) { 
+                    null 
+                }
+                
+                // 3. Transformer les tâches planifiées en format compatible pour l'affichage
+                val plannedActivities = mutableListOf<ActivityData>()
+                schedule?.days?.forEach { day ->
+                    day.items.forEach { item ->
+                        plannedActivities.add(ActivityData(
+                            user_id = userId,
+                            type = "[Planifié] ${item.activity_type}",
+                            location = Location(0.0, 0.0), // Placeholder
+                            timestamp = "${day.day_of_week} à ${item.time}",
+                            duration = item.duration,
+                            locationName = item.location_name
+                        ))
                     }
                 }
-            } catch (e: Exception) {
-                Log.e("ActivityList", "Error loading activities", e)
+
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(requireContext(), "Erreur lors du chargement des activités", Toast.LENGTH_SHORT).show()
+                    // On fusionne les listes : activités réelles (récentes en haut) + programme
+                    val combinedList = activities.reversed() + plannedActivities
+                    adapter.updateActivities(combinedList)
+                }
+            } catch (e: Exception) {
+                Log.e("ActivityList", "Error loading data", e)
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(requireContext(), "Erreur lors du chargement des données", Toast.LENGTH_SHORT).show()
                 }
             }
         }

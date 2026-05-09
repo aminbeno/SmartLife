@@ -19,7 +19,6 @@
             app:title="Mon Programme"
             app:navigationIcon="@android:drawable/ic_menu_revert">
 
-            <!-- Bouton Calendrier pour choisir une date réelle -->
             <ImageButton
                 android:id="@+id/btnCalendarPicker"
                 android:layout_width="48dp"
@@ -33,7 +32,6 @@
 
         </com.google.android.material.appbar.MaterialToolbar>
 
-        <!-- Liste horizontale de dates (Timeline) -->
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/tabLayoutDays"
             android:layout_width="match_parent"
@@ -55,7 +53,6 @@
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         tools:listitem="@layout/item_schedule" />
 
-    <!-- Bouton Planifier stylisé -->
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:id="@+id/fabAddTask"
         android:layout_width="wrap_content"
