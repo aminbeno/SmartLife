@@ -4,6 +4,7 @@ import os
 
 load_dotenv()
 
+# IMPORTANT: Utiliser l'IP locale ou localhost
 MONGODB_URL = os.getenv("MONGODB_URL", "mongodb://localhost:27017")
 DATABASE_NAME = os.getenv("DATABASE_NAME", "SmartLifeDB")
 
@@ -17,6 +18,7 @@ habits_collection = db["habits"]
 recommendations_collection = db["recommendations"]
 voice_logs_collection = db["voice_logs"]
 named_locations_collection = db["named_locations"]
+schedules_collection = db["schedules"]
 
 async def get_database():
     """Get database connection"""

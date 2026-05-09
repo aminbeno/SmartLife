@@ -1,11 +1,13 @@
 from fastapi import APIRouter, HTTPException, status
 from models import (
     UserData, UserResponse, SuccessResponse, ErrorResponse,
-    ActivityData, HabitData, RecommendationData, VoiceLogData, FcmTokenUpdate, NamedLocation
+    ActivityData, HabitData, RecommendationData, VoiceLogData, FcmTokenUpdate, NamedLocation,
+    WeeklySchedule
 )
 from database import (
     users_collection, activities_collection, habits_collection,
-    recommendations_collection, voice_logs_collection, named_locations_collection
+    recommendations_collection, voice_logs_collection, named_locations_collection,
+    schedules_collection
 )
 from bson import ObjectId
 from typing import List
@@ -103,8 +105,29 @@ async def add_named_location(location: NamedLocation):
 async def get_named_locations(user_id: str):
     cursor = named_locations_collection.find({"user_id": user_id})
     locations = await cursor.to_list(length=100)
-    # Convert ObjectId to string for JSON serialization if necessary
     for loc in locations:
         loc['id'] = str(loc['_id'])
         del loc['_id']
     return locations
+
+# --- SCHEDULE ENDPOINTS ---
+
+@router.get("/schedule/{user_id}", response_model=WeeklySchedule)
+async def get_weekly_schedule(user_id: str):
+    schedule = await schedules_collection.find_one({"user_id": user_id})
+    if not schedule:
+        # Return an empty schedule if none exists
+        days = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"]
+        return {"user_id": user_id, "days": [{"day_of_week": day, "items": []} for day in days]}
+    schedule["_id"] = str(schedule["_id"])
+    return schedule
+
+@router.post("/schedule", response_model=SuccessResponse)
+async def save_weekly_schedule(schedule: WeeklySchedule):
+    # Update if exists, else insert
+    result = await schedules_collection.replace_one(
+        {"user_id": schedule.user_id},
+        schedule.model_dump(),
+        upsert=True
+    )
+    return {"status": "success", "message": "Schedule updated successfully"}

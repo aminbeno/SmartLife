@@ -76,6 +76,23 @@ data class NamedLocation(
     @SerializedName("lng") val lng: Double
 )
 
+// --- Schedule Models ---
+data class ScheduleItem(
+    val time: String, // e.g., "08:30"
+    val activity_type: String, // e.g., "Walking"
+    val location_name: String? = null, // e.g., "Parc Central"
+    val duration: Int // minutes
+)
+
+data class DaySchedule(
+    val day_of_week: String, // e.g., "Monday"
+    val items: List<ScheduleItem> = emptyList()
+)
+
+data class weeklySchedule(
+    @SerializedName("user_id") val user_id: String,
+    val days: List<DaySchedule>
+)
 
 // --- Generic Response ---
 data class SuccessResponse<T>(

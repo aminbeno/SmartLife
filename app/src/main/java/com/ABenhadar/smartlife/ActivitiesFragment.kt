@@ -135,10 +135,13 @@ class ActivitiesFragment : Fragment(), MapEventsReceiver {
         map.setMultiTouchControls(true)
         map.controller.setZoom(15.0)
 
-        locationOverlay = object : MyLocationNewOverlay(GpsMyLocationProvider(requireContext()), map) {
-            override fun onLocationChanged(location: Location?, source: IMyLocationProvider?) {
+        val provider = GpsMyLocationProvider(requireContext())
+        locationOverlay = object : MyLocationNewOverlay(provider, map) {
+            override fun onLocationChanged(location: Location, source: IMyLocationProvider) {
                 super.onLocationChanged(location, source)
-                location?.let { updateLiveStats(it) }
+                lifecycleScope.launch(Dispatchers.Main) {
+                    updateLiveStats(location)
+                }
             }
         }
         
@@ -170,10 +173,8 @@ class ActivitiesFragment : Fragment(), MapEventsReceiver {
         val distKm = totalDistance / 1000
         val speedKmh = location.speed * 3.6
 
-        lifecycleScope.launch(Dispatchers.Main) {
-            tvLiveDist.text = String.format(Locale.getDefault(), "%.2f km", distKm)
-            tvLiveSpeed.text = String.format(Locale.getDefault(), "%.0f km/h", speedKmh)
-        }
+        tvLiveDist.text = String.format(Locale.getDefault(), "%.2f km", distKm)
+        tvLiveSpeed.text = String.format(Locale.getDefault(), "%.0f km/h", speedKmh)
     }
 
     private fun setupTrackingButtons() {
@@ -215,7 +216,8 @@ class ActivitiesFragment : Fragment(), MapEventsReceiver {
     private fun isServiceRunning(serviceClass: Class<*>): Boolean {
         val manager = requireContext().getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
         @Suppress("DEPRECATION")
-        return manager.getRunningServices(Int.MAX_VALUE).any { it.service.className == serviceClass.name }
+        val runningServices = manager.getRunningServices(Int.MAX_VALUE)
+        return runningServices.any { it.service.className == serviceClass.name }
     }
 
     private fun setupSearchBar() {
@@ -249,15 +251,20 @@ class ActivitiesFragment : Fragment(), MapEventsReceiver {
             val results = withContext(Dispatchers.IO) {
                 try { 
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                         geocoder.getFromLocationName(query, 5)
+                        null
                     } else {
                         @Suppress("DEPRECATION")
                         geocoder.getFromLocationName(query, 5)
                     }
                 } catch (e: Exception) { null }
             }
-            if (!results.isNullOrEmpty()) {
-                searchAdapter.updateResults(results)
+            
+            val finalResults = results ?: withContext(Dispatchers.IO) {
+                try { @Suppress("DEPRECATION") geocoder.getFromLocationName(query, 5) } catch(e: Exception) { null }
+            }
+
+            if (!finalResults.isNullOrEmpty()) {
+                searchAdapter.updateResults(finalResults)
                 cvSearchResults.visibility = View.VISIBLE
             } else {
                 cvSearchResults.visibility = View.GONE

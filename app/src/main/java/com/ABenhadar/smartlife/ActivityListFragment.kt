@@ -1,5 +1,6 @@
 package com.ABenhadar.smartlife
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -37,8 +38,8 @@ class ActivityListFragment : Fragment() {
         setupRecyclerView()
 
         fabAdd.setOnClickListener {
-            // Logique pour ajouter/planifier une activité (peut-être un dialogue ou une nouvelle activité)
-            Toast.makeText(requireContext(), "Fonctionnalité de planification bientôt disponible !", Toast.LENGTH_SHORT).show()
+            val intent = Intent(requireContext(), ScheduleActivity::class.java)
+            startActivity(intent)
         }
 
         loadActivities()
@@ -60,7 +61,6 @@ class ActivityListFragment : Fragment() {
                 val activities = apiService.getActivities(userId)
                 withContext(Dispatchers.Main) {
                     if (activities.isNotEmpty()) {
-                        // On inverse pour avoir les plus récentes en haut
                         adapter.updateActivities(activities.reversed())
                     } else {
                         Log.d("ActivityList", "No activities found")

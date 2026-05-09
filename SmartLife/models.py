@@ -69,6 +69,21 @@ class NamedLocation(BaseModel):
     lng: float
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
+# --- Schedule Models ---
+class ScheduleItem(BaseModel):
+    time: str  # e.g., "08:30"
+    activity_type: str
+    location_name: Optional[str] = None
+    duration: int
+
+class DaySchedule(BaseModel):
+    day_of_week: str
+    items: List[ScheduleItem] = []
+
+class WeeklySchedule(BaseModel):
+    user_id: str
+    days: List[DaySchedule]
+
 # --- Generic Response ---
 class SuccessResponse(BaseModel):
     status: str = "success"

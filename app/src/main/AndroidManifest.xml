@@ -65,6 +65,14 @@
         <activity
             android:name=".EditProfileActivity"
             android:exported="false" />
+
+        <!-- Ajout de l'activité de planification -->
+        <activity
+            android:name=".ScheduleActivity"
+            android:exported="false"
+            android:label="Planificateur"
+            android:theme="@style/Theme.SmartLife" />
+
     </application>
 
 </manifest>
