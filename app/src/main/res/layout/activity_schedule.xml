@@ -17,15 +17,33 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             app:title="Mon Programme"
-            app:navigationIcon="@android:drawable/ic_menu_revert" />
+            app:navigationIcon="@android:drawable/ic_menu_revert">
 
+            <!-- Bouton Calendrier pour choisir une date réelle -->
+            <ImageButton
+                android:id="@+id/btnCalendarPicker"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_gravity="end"
+                android:layout_marginEnd="8dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@android:drawable/ic_menu_today"
+                app:tint="?attr/colorPrimary"
+                android:contentDescription="Choisir une date" />
+
+        </com.google.android.material.appbar.MaterialToolbar>
+
+        <!-- Liste horizontale de dates (Timeline) -->
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/tabLayoutDays"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="72dp"
             app:tabMode="scrollable"
+            app:tabIndicatorHeight="3dp"
+            app:tabIndicatorFullWidth="false"
             app:tabSelectedTextColor="?attr/colorPrimary"
-            app:tabIndicatorColor="?attr/colorPrimary" />
+            app:tabIndicatorColor="?attr/colorPrimary"
+            app:tabTextAppearance="@style/TextAppearance.Material3.LabelMedium" />
 
     </com.google.android.material.appbar.AppBarLayout>
 
@@ -33,17 +51,19 @@
         android:id="@+id/rvSchedule"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="8dp"
+        android:paddingTop="8dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         tools:listitem="@layout/item_schedule" />
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
+    <!-- Bouton Planifier stylisé -->
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:id="@+id/fabAddTask"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="16dp"
+        android:layout_margin="24dp"
         android:layout_gravity="bottom|end"
-        android:src="@android:drawable/ic_input_add"
+        android:text="Planifier"
+        app:icon="@android:drawable/ic_input_add"
         app:backgroundTint="?attr/colorPrimary"
         app:tint="?attr/colorOnPrimary" />
 

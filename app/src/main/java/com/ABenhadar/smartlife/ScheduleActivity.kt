@@ -1,12 +1,10 @@
 package com.ABenhadar.smartlife
 
+import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.widget.ArrayAdapter
-import android.widget.EditText
-import android.widget.Spinner
-import android.widget.Toast
+import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
@@ -18,12 +16,13 @@ import com.ABenhadar.smartlife.models.NamedLocation
 import com.ABenhadar.smartlife.models.ScheduleItem
 import com.ABenhadar.smartlife.models.weeklySchedule
 import com.google.android.material.appbar.MaterialToolbar
-import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.google.android.material.tabs.TabLayout
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.text.SimpleDateFormat
 import java.util.*
 
 class ScheduleActivity : AppCompatActivity() {
@@ -31,11 +30,12 @@ class ScheduleActivity : AppCompatActivity() {
     private lateinit var tabLayout: TabLayout
     private lateinit var rvSchedule: RecyclerView
     private lateinit var adapter: ScheduleAdapter
-    private lateinit var fabAdd: FloatingActionButton
+    private lateinit var fabAdd: ExtendedFloatingActionButton
     private val auth = FirebaseAuth.getInstance()
     private val apiService by lazy { RetrofitClient.getApiService() }
 
-    private val daysOfWeek = listOf("Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche")
+    // Paire de (Nom technique pour la DB "Lundi", Titre affiché "Lun\n12 Mai")
+    private var weekDaysData: List<Pair<String, String>> = emptyList()
     private var currentWeeklySchedule = weeklySchedule("", emptyList())
     private var currentDayIndex = 0
     private var namedLocations: List<NamedLocation> = emptyList()
@@ -44,16 +44,25 @@ class ScheduleActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_schedule)
 
+        // 1. Initialiser les dates réelles de la semaine
+        weekDaysData = generateWeekDates()
+
         val toolbar = findViewById<MaterialToolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
         toolbar.setNavigationOnClickListener { finish() }
+
+        // Bouton Calendrier pour changer de date
+        findViewById<ImageButton>(R.id.btnCalendarPicker).setOnClickListener {
+            showDatePicker()
+        }
 
         tabLayout = findViewById(R.id.tabLayoutDays)
         rvSchedule = findViewById(R.id.rvSchedule)
         fabAdd = findViewById(R.id.fabAddTask)
 
-        setupTabs()
+        // --- CORRECTION CRASH : Toujours l'adapter AVANT les onglets ---
         setupRecyclerView()
+        setupTabs()
 
         fabAdd.setOnClickListener { showAddTaskDialog() }
 
@@ -61,9 +70,40 @@ class ScheduleActivity : AppCompatActivity() {
         loadNamedLocations()
     }
 
+    private fun generateWeekDates(): List<Pair<String, String>> {
+        val calendar = Calendar.getInstance()
+        calendar.firstDayOfWeek = Calendar.MONDAY
+        // Aligner sur le Lundi de la semaine en cours
+        while (calendar.get(Calendar.DAY_OF_WEEK) != Calendar.MONDAY) {
+            calendar.add(Calendar.DATE, -1)
+        }
+        
+        val displayFormat = SimpleDateFormat("EEE\nd MMM", Locale.getDefault())
+        // CORRECTION : Utiliser le Français pour les noms techniques afin de correspondre au serveur
+        val technicalFormat = SimpleDateFormat("EEEE", Locale.FRANCE) 
+        
+        val list = mutableListOf<Pair<String, String>>()
+        val todayStr = SimpleDateFormat("dd/MM", Locale.getDefault()).format(Date())
+
+        for (i in 0..6) {
+            val technicalName = technicalFormat.format(calendar.time).replaceFirstChar { it.uppercase() }
+            var displayName = displayFormat.format(calendar.time).uppercase()
+            
+            if (SimpleDateFormat("dd/MM", Locale.getDefault()).format(calendar.time) == todayStr) {
+                displayName = "AUJOURD'HUI\n" + SimpleDateFormat("dd MMM", Locale.getDefault()).format(calendar.time).uppercase()
+            }
+
+            list.add(technicalName to displayName)
+            calendar.add(Calendar.DAY_OF_YEAR, 1)
+        }
+        return list
+    }
+
     private fun setupTabs() {
-        daysOfWeek.forEach { day ->
-            tabLayout.addTab(tabLayout.newTab().setText(day))
+        tabLayout.removeAllTabs()
+        weekDaysData.forEach { data ->
+            val tab = tabLayout.newTab().setText(data.second)
+            tabLayout.addTab(tab)
         }
 
         tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
@@ -74,12 +114,35 @@ class ScheduleActivity : AppCompatActivity() {
             override fun onTabUnselected(tab: TabLayout.Tab?) {}
             override fun onTabReselected(tab: TabLayout.Tab?) {}
         })
+
+        // Sélectionner "Aujourd'hui" par son nom technique français
+        val todayTech = SimpleDateFormat("EEEE", Locale.FRANCE).format(Date()).replaceFirstChar { it.uppercase() }
+        val index = weekDaysData.indexOfFirst { it.first == todayTech }
+        if (index != -1) {
+            tabLayout.getTabAt(index)?.select()
+            currentDayIndex = index
+        } else {
+            updateDayList()
+        }
+    }
+
+    private fun showDatePicker() {
+        val c = Calendar.getInstance()
+        DatePickerDialog(this, { _, year, month, day ->
+            val selected = Calendar.getInstance()
+            selected.set(year, month, day)
+            val techName = SimpleDateFormat("EEEE", Locale.FRANCE).format(selected.time).replaceFirstChar { it.uppercase() }
+            val index = weekDaysData.indexOfFirst { it.first == techName }
+            if (index != -1) {
+                tabLayout.getTabAt(index)?.select()
+            } else {
+                Toast.makeText(this, "Date hors de cette semaine", Toast.LENGTH_SHORT).show()
+            }
+        }, c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH)).show()
     }
 
     private fun setupRecyclerView() {
-        adapter = ScheduleAdapter { position ->
-            deleteTask(position)
-        }
+        adapter = ScheduleAdapter { position -> deleteTask(position) }
         rvSchedule.layoutManager = LinearLayoutManager(this)
         rvSchedule.adapter = adapter
     }
@@ -94,7 +157,8 @@ class ScheduleActivity : AppCompatActivity() {
                     updateDayList()
                 }
             } catch (e: Exception) {
-                currentWeeklySchedule = weeklySchedule(userId, daysOfWeek.map { DaySchedule(it) })
+                val defaultDays = listOf("Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche")
+                currentWeeklySchedule = weeklySchedule(userId, defaultDays.map { DaySchedule(it) })
                 withContext(Dispatchers.Main) { updateDayList() }
             }
         }
@@ -110,15 +174,16 @@ class ScheduleActivity : AppCompatActivity() {
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(this@ScheduleActivity, "Impossible de charger vos lieux", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@ScheduleActivity, "Lieux non chargés", Toast.LENGTH_SHORT).show()
                 }
             }
         }
     }
 
     private fun updateDayList() {
-        val dayName = daysOfWeek[currentDayIndex]
-        val daySchedule = currentWeeklySchedule.days.find { it.day_of_week == dayName }
+        if (!::adapter.isInitialized || weekDaysData.isEmpty()) return
+        val technicalDayName = weekDaysData[currentDayIndex].first
+        val daySchedule = currentWeeklySchedule.days.find { it.day_of_week.equals(technicalDayName, ignoreCase = true) }
         adapter.updateItems(daySchedule?.items ?: emptyList())
     }
 
@@ -129,36 +194,25 @@ class ScheduleActivity : AppCompatActivity() {
         val spinnerLocation = dialogView.findViewById<Spinner>(R.id.spinnerTaskLocation)
         val etDuration = dialogView.findViewById<EditText>(R.id.etTaskDuration)
 
-        // 1. Gestion de l'heure via TimePicker
         etTime.setOnClickListener {
             val calendar = Calendar.getInstance()
             TimePickerDialog(this, { _, hour, minute ->
-                val timeStr = String.format(Locale.getDefault(), "%02d:%02d", hour, minute)
-                etTime.setText(timeStr)
+                etTime.setText(String.format(Locale.getDefault(), "%02d:%02d", hour, minute))
             }, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true).show()
         }
 
-        // 2. Spinner pour les types d'activités
-        val activities = listOf("Walking", "Running", "Stationary", "Sport", "Repos")
-        spinnerType.adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, activities)
-
-        // 3. Spinner pour les lieux nommés (fetchés depuis la DB)
+        spinnerType.adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, listOf("Walking", "Running", "Stationary", "Sport", "Repos"))
         val locationNames = if (namedLocations.isEmpty()) listOf("Aucun lieu enregistré") else namedLocations.map { it.name }
         spinnerLocation.adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, locationNames)
 
         AlertDialog.Builder(this)
-            .setTitle("Planifier une activité")
+            .setTitle("Planifier pour ${weekDaysData[currentDayIndex].second.replace("\n", " ")}")
             .setView(dialogView)
             .setPositiveButton("Ajouter") { _, _ ->
                 val time = etTime.text.toString()
-                val type = spinnerType.selectedItem.toString()
-                val loc = if (namedLocations.isNotEmpty()) spinnerLocation.selectedItem.toString() else "Inconnu"
-                val dur = etDuration.text.toString().toIntOrNull() ?: 0
-
                 if (time.isNotEmpty()) {
-                    addNewTask(ScheduleItem(time, type, loc, dur))
-                } else {
-                    Toast.makeText(this, "Veuillez choisir une heure", Toast.LENGTH_SHORT).show()
+                    val locName = if (namedLocations.isNotEmpty()) spinnerLocation.selectedItem.toString() else "Inconnu"
+                    addNewTask(ScheduleItem(time, spinnerType.selectedItem.toString(), locName, etDuration.text.toString().toIntOrNull() ?: 0))
                 }
             }
             .setNegativeButton("Annuler", null)
@@ -166,23 +220,21 @@ class ScheduleActivity : AppCompatActivity() {
     }
 
     private fun addNewTask(item: ScheduleItem) {
-        val dayName = daysOfWeek[currentDayIndex]
-        val newDays = currentWeeklySchedule.days.map { day ->
-            if (day.day_of_week == dayName) {
-                day.copy(items = day.items + item)
-            } else day
+        val dayName = weekDaysData[currentDayIndex].first
+        val newDays = currentWeeklySchedule.days.map { 
+            if (it.day_of_week.equals(dayName, ignoreCase = true)) it.copy(items = it.items + item) else it 
         }
         currentWeeklySchedule = currentWeeklySchedule.copy(days = newDays)
         saveSchedule()
     }
 
     private fun deleteTask(position: Int) {
-        val dayName = daysOfWeek[currentDayIndex]
-        val newDays = currentWeeklySchedule.days.map { day ->
-            if (day.day_of_week == dayName) {
-                val newItems = day.items.toMutableList().apply { removeAt(position) }
-                day.copy(items = newItems)
-            } else day
+        val dayName = weekDaysData[currentDayIndex].first
+        val newDays = currentWeeklySchedule.days.map { 
+            if (it.day_of_week.equals(dayName, ignoreCase = true)) {
+                val newItems = it.items.toMutableList().apply { removeAt(position) }
+                it.copy(items = newItems)
+            } else it 
         }
         currentWeeklySchedule = currentWeeklySchedule.copy(days = newDays)
         saveSchedule()
@@ -194,7 +246,7 @@ class ScheduleActivity : AppCompatActivity() {
                 apiService.saveWeeklySchedule(currentWeeklySchedule)
                 withContext(Dispatchers.Main) {
                     updateDayList()
-                    Toast.makeText(this@ScheduleActivity, "Programme enregistré", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@ScheduleActivity, "Programme mis à jour", Toast.LENGTH_SHORT).show()
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
