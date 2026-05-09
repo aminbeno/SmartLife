@@ -1,6 +1,7 @@
 package com.ABenhadar.smartlife.api
 
 import com.ABenhadar.smartlife.models.*
+import retrofit2.Response // Added import
 import retrofit2.http.*
 
 interface SmartLifeApiService {
@@ -41,4 +42,11 @@ interface SmartLifeApiService {
     // --- VOICE APIs ---
     @POST("api/voice")
     suspend fun addVoiceLog(@Body voiceLog: VoiceLogData): SuccessResponse<Map<String, String>>
+
+    // --- NAMED LOCATION API ---
+    @POST("api/named_locations") // New endpoint for saving named locations
+    suspend fun saveNamedLocation(@Body namedLocation: NamedLocation): Response<SuccessResponse<Any>>
+
+    @GET("api/named_locations/{user_id}") // New endpoint for retrieving named locations
+    suspend fun getNamedLocations(@Path("user_id") userId: String): List<NamedLocation>
 }

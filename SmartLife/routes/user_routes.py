@@ -1,11 +1,11 @@
 from fastapi import APIRouter, HTTPException, status
 from models import (
     UserData, UserResponse, SuccessResponse, ErrorResponse,
-    ActivityData, HabitData, RecommendationData, VoiceLogData, FcmTokenUpdate
+    ActivityData, HabitData, RecommendationData, VoiceLogData, FcmTokenUpdate, NamedLocation
 )
 from database import (
     users_collection, activities_collection, habits_collection,
-    recommendations_collection, voice_logs_collection
+    recommendations_collection, voice_logs_collection, named_locations_collection
 )
 from bson import ObjectId
 from typing import List
@@ -91,3 +91,20 @@ async def get_recommendations(user_id: str):
 async def add_voice_log(voice: VoiceLogData):
     result = await voice_logs_collection.insert_one(voice.model_dump())
     return {"status": "success", "message": "Voice log saved", "data": {"id": str(result.inserted_id)}}
+
+# --- NAMED LOCATION ENDPOINTS ---
+
+@router.post("/named_locations", response_model=SuccessResponse, status_code=status.HTTP_201_CREATED)
+async def add_named_location(location: NamedLocation):
+    result = await named_locations_collection.insert_one(location.model_dump())
+    return {"status": "success", "message": "Named location saved", "data": {"id": str(result.inserted_id)}}
+
+@router.get("/named_locations/{user_id}", response_model=List[NamedLocation])
+async def get_named_locations(user_id: str):
+    cursor = named_locations_collection.find({"user_id": user_id})
+    locations = await cursor.to_list(length=100)
+    # Convert ObjectId to string for JSON serialization if necessary
+    for loc in locations:
+        loc['id'] = str(loc['_id'])
+        del loc['_id']
+    return locations

@@ -61,6 +61,14 @@ class VoiceLogData(BaseModel):
     response: str
     timestamp: datetime = Field(default_factory=datetime.utcnow)
 
+# --- Named Location Model ---
+class NamedLocation(BaseModel):
+    user_id: str
+    name: str
+    lat: float
+    lng: float
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
 # --- Generic Response ---
 class SuccessResponse(BaseModel):
     status: str = "success"

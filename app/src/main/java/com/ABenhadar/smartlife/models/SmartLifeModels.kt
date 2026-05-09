@@ -68,6 +68,15 @@ data class VoiceLogData(
     val timestamp: String? = null
 )
 
+// --- Named Location Model ---
+data class NamedLocation(
+    @SerializedName("user_id") val user_id: String,
+    @SerializedName("name") val name: String,
+    @SerializedName("lat") val lat: Double,
+    @SerializedName("lng") val lng: Double
+)
+
+
 // --- Generic Response ---
 data class SuccessResponse<T>(
     val status: String,

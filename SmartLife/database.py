@@ -16,6 +16,7 @@ activities_collection = db["activities"]
 habits_collection = db["habits"]
 recommendations_collection = db["recommendations"]
 voice_logs_collection = db["voice_logs"]
+named_locations_collection = db["named_locations"]
 
 async def get_database():
     """Get database connection"""
