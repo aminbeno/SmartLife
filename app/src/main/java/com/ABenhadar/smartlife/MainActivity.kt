@@ -57,7 +57,8 @@ class MainActivity : AppCompatActivity() {
         bottomNav.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.nav_home -> replaceFragment(HomeFragment())
-                R.id.nav_activities -> replaceFragment(ActivitiesFragment())
+                R.id.nav_map -> replaceFragment(ActivitiesFragment()) // ActivitiesFragment est l'écran Carte actuel
+                R.id.nav_activities -> replaceFragment(ActivityListFragment()) // Nouvel écran pour l'historique
                 R.id.nav_reports -> replaceFragment(ReportsFragment())
                 R.id.nav_settings -> replaceFragment(SettingsFragment())
             }

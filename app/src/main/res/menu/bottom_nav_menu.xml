@@ -5,8 +5,12 @@
         android:icon="@android:drawable/ic_menu_today"
         android:title="Accueil" />
     <item
-        android:id="@+id/nav_activities"
+        android:id="@+id/nav_map"
         android:icon="@android:drawable/ic_menu_mylocation"
+        android:title="Carte" />
+    <item
+        android:id="@+id/nav_activities"
+        android:icon="@android:drawable/ic_menu_recent_history"
         android:title="Activités" />
     <item
         android:id="@+id/nav_reports"
