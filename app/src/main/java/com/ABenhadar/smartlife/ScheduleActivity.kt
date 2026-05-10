@@ -34,7 +34,7 @@ class ScheduleActivity : AppCompatActivity() {
     private val auth = FirebaseAuth.getInstance()
     private val apiService by lazy { RetrofitClient.getApiService() }
 
-    // Paire de (Clé technique pour DB ex: "Lundi", Titre affiché ex: "LUN.\n12 MAI")
+    // Pair of (Technical Name for DB "Lundi", Display Name for UI "LUN\n12 MAI")
     private var weekDaysData: List<Pair<String, String>> = emptyList()
     private var currentWeeklySchedule = weeklySchedule("", emptyList())
     private var currentDayIndex = 0
@@ -44,7 +44,7 @@ class ScheduleActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_schedule)
 
-        // 1. Initialiser les dates réelles de la semaine actuelle
+        // 1. Initialiser les dates (Important : Faire ça avant setupTabs)
         weekDaysData = generateWeekDates()
 
         val toolbar = findViewById<MaterialToolbar>(R.id.toolbar)
@@ -59,8 +59,7 @@ class ScheduleActivity : AppCompatActivity() {
         rvSchedule = findViewById(R.id.rvSchedule)
         fabAdd = findViewById(R.id.fabAddTask)
 
-        // --- CORRECTIONS CRASH ---
-        // On initialise d'abord l'adapter pour qu'il soit prêt lors de la sélection d'onglet
+        // --- CORRECTION CRASH : Initialiser l'adapter AVANT les onglets ---
         setupRecyclerView()
         setupTabs()
 
@@ -74,18 +73,17 @@ class ScheduleActivity : AppCompatActivity() {
         val calendar = Calendar.getInstance(Locale.FRANCE)
         calendar.firstDayOfWeek = Calendar.MONDAY
         
-        // Aligner sur le Lundi de la semaine en cours
+        // Aligner sur le Lundi de la semaine en cours pour cohérence avec le backend
         calendar.set(Calendar.HOUR_OF_DAY, 0)
         calendar.set(Calendar.MINUTE, 0)
         calendar.set(Calendar.SECOND, 0)
         calendar.set(Calendar.MILLISECOND, 0)
-        
         while (calendar.get(Calendar.DAY_OF_WEEK) != Calendar.MONDAY) {
             calendar.add(Calendar.DAY_OF_MONTH, -1)
         }
         
         val displayFormat = SimpleDateFormat("EEE\nd MMM", Locale.getDefault())
-        // On utilise le Français pour la DB afin d'être cohérent avec l'ancienne structure
+        // CORRECTION : Utiliser le Français pour les noms techniques afin de correspondre au serveur
         val technicalFormat = SimpleDateFormat("EEEE", Locale.FRANCE) 
         
         val list = mutableListOf<Pair<String, String>>()
@@ -96,7 +94,7 @@ class ScheduleActivity : AppCompatActivity() {
             var displayName = displayFormat.format(calendar.time).uppercase()
             
             if (SimpleDateFormat("dd/MM", Locale.getDefault()).format(calendar.time) == todayStr) {
-                displayName = "AUJOURD'HUI\n" + SimpleDateFormat("dd MMM", Locale.getDefault()).format(calendar.time).uppercase()
+                displayName = "AUJOURD'HUI\n" + SimpleDateFormat("d MMM", Locale.getDefault()).format(calendar.time).uppercase()
             }
 
             list.add(technicalName to displayName)
@@ -108,7 +106,7 @@ class ScheduleActivity : AppCompatActivity() {
     private fun setupTabs() {
         tabLayout.removeAllTabs()
         
-        // Listener ajouté AVANT les onglets pour capter la sélection par défaut
+        // Ajouter le listener AVANT les onglets pour capter la sélection initiale
         tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab?) {
                 currentDayIndex = tab?.position ?: 0
@@ -123,7 +121,7 @@ class ScheduleActivity : AppCompatActivity() {
             tabLayout.addTab(tab)
         }
 
-        // Sélection automatique d'aujourd'hui par son nom technique français
+        // Sélectionner "Aujourd'hui" par son nom technique français
         val todayTech = SimpleDateFormat("EEEE", Locale.FRANCE).format(Date()).replaceFirstChar { it.uppercase() }
         val index = weekDaysData.indexOfFirst { it.first == todayTech }
         if (index != -1) {
@@ -165,7 +163,7 @@ class ScheduleActivity : AppCompatActivity() {
                     updateDayList()
                 }
             } catch (e: Exception) {
-                // Fallback avec les noms techniques en Français
+                // Initialisation par défaut si aucun programme n'existe
                 val defaultDays = listOf("Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche")
                 currentWeeklySchedule = weeklySchedule(userId, defaultDays.map { DaySchedule(it) })
                 withContext(Dispatchers.Main) { updateDayList() }
@@ -194,7 +192,7 @@ class ScheduleActivity : AppCompatActivity() {
         if (currentDayIndex < 0 || currentDayIndex >= weekDaysData.size) return
 
         val technicalDayName = weekDaysData[currentDayIndex].first
-        // Recherche insensible à la casse pour assurer le mapping
+        // Recherche insensible à la casse pour éviter les erreurs de mapping
         val daySchedule = currentWeeklySchedule.days.find { it.day_of_week.equals(technicalDayName, ignoreCase = true) }
         adapter.updateItems(daySchedule?.items ?: emptyList())
     }
@@ -206,6 +204,7 @@ class ScheduleActivity : AppCompatActivity() {
         val spinnerLocation = dialogView.findViewById<Spinner>(R.id.spinnerTaskLocation)
         val etDuration = dialogView.findViewById<EditText>(R.id.etTaskDuration)
 
+        // Saisie de l'heure sans clavier
         etTime.setOnClickListener {
             val calendar = Calendar.getInstance()
             TimePickerDialog(this, { _, hour, minute ->
@@ -213,6 +212,7 @@ class ScheduleActivity : AppCompatActivity() {
             }, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true).show()
         }
 
+        // Saisie de la durée sans clavier
         etDuration.setOnClickListener {
             val picker = NumberPicker(this)
             picker.minValue = 5
@@ -221,7 +221,7 @@ class ScheduleActivity : AppCompatActivity() {
             AlertDialog.Builder(this)
                 .setTitle("Durée (minutes)")
                 .setView(picker)
-                .setPositiveButton("Valider") { _, _ -> etDuration.setText(picker.value.toString()) }
+                .setPositiveButton("OK") { _, _ -> etDuration.setText(picker.value.toString()) }
                 .show()
         }
 
@@ -234,9 +234,18 @@ class ScheduleActivity : AppCompatActivity() {
             .setView(dialogView)
             .setPositiveButton("Ajouter") { _, _ ->
                 val time = etTime.text.toString()
-                if (time.isNotEmpty()) {
-                    val locName = if (namedLocations.isNotEmpty()) spinnerLocation.selectedItem.toString() else "Inconnu"
-                    addNewTask(ScheduleItem(time, spinnerType.selectedItem.toString(), locName, etDuration.text.toString().toIntOrNull() ?: 0))
+                val durStr = etDuration.text.toString()
+                if (time.isNotEmpty() && durStr.isNotEmpty()) {
+                    val selectedPos = spinnerLocation.selectedItemPosition
+                    val selectedLoc = if (namedLocations.isNotEmpty() && selectedPos != -1) namedLocations[selectedPos] else null
+                    
+                    val locName = selectedLoc?.name ?: "Inconnu"
+                    val lat = selectedLoc?.lat
+                    val lng = selectedLoc?.lng
+                    
+                    addNewTask(ScheduleItem(time, spinnerType.selectedItem.toString(), locName, lat, lng, durStr.toInt()))
+                } else {
+                    Toast.makeText(this, "Veuillez remplir tous les champs", Toast.LENGTH_SHORT).show()
                 }
             }
             .setNegativeButton("Annuler", null)
@@ -274,7 +283,7 @@ class ScheduleActivity : AppCompatActivity() {
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(this@ScheduleActivity, "Erreur réseau", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@ScheduleActivity, "Erreur lors de la sauvegarde", Toast.LENGTH_SHORT).show()
                 }
             }
         }

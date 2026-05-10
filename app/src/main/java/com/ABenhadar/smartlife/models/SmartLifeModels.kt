@@ -82,6 +82,8 @@ data class ScheduleItem(
     val time: String, // e.g., "08:30"
     val activity_type: String, // e.g., "Walking"
     val location_name: String? = null, // e.g., "Parc Central"
+    val lat: Double? = null, // Added
+    val lng: Double? = null, // Added
     val duration: Int // minutes
 )
 

@@ -16,7 +16,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="24dp">
+            android:paddingHorizontal="24dp"
+            android:paddingTop="24dp"
+            android:paddingBottom="12dp">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -26,97 +28,73 @@
                 android:fontFamily="sans-serif-medium"
                 android:textColor="?attr/colorOnSurface" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:text="Suivez vos mouvements et organisez votre journée."
-                android:alpha="0.7"
-                android:textColor="?attr/colorOnSurfaceVariant" />
-        </LinearLayout>
-    </com.google.android.material.appbar.AppBarLayout>
-
-    <androidx.core.widget.NestedScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <!-- Section Programme / Planification -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="24dp"
-                android:layout_marginTop="16dp"
-                android:text="Programme suggéré"
-                android:textSize="14sp"
-                android:textAllCaps="true"
-                android:letterSpacing="0.1"
-                android:textColor="?attr/colorPrimary"
-                android:textStyle="bold" />
-
+            <!-- Barre de Recherche -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="16dp"
-                app:cardCornerRadius="24dp"
+                android:layout_marginTop="16dp"
+                app:cardCornerRadius="16dp"
                 app:cardElevation="2dp"
-                app:strokeWidth="0dp"
-                app:cardBackgroundColor="?attr/colorSecondaryContainer">
+                app:strokeWidth="0dp">
 
-                <LinearLayout
+                <androidx.appcompat.widget.SearchView
+                    android:id="@+id/searchViewActivities"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="20dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Routine Matinale"
-                        android:textStyle="bold"
-                        android:textColor="?attr/colorOnSecondaryContainer" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:text="15 min de marche rapide près de 'Parc Central' recommandée à 08:30."
-                        android:textColor="?attr/colorOnSecondaryContainer" />
-                </LinearLayout>
+                    app:iconifiedByDefault="false"
+                    app:queryHint="Rechercher une activité..."
+                    app:queryBackground="@android:color/transparent" />
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Section Historique -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="24dp"
-                android:layout_marginTop="24dp"
-                android:text="Historique récent"
-                android:textSize="14sp"
-                android:textAllCaps="true"
-                android:letterSpacing="0.1"
-                android:textColor="?attr/colorPrimary"
-                android:textStyle="bold" />
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rvActivities"
+            <!-- Filtres par Chips -->
+            <HorizontalScrollView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:nestedScrollingEnabled="false"
-                tools:listitem="@layout/item_activity" />
+                android:layout_marginTop="12dp"
+                android:scrollbars="none">
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="80dp" />
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/chipGroupFilters"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:singleSelection="true"
+                    app:selectionRequired="true">
 
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipAll"
+                        style="@style/Widget.Material3.Chip.Filter"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Tout"
+                        android:checked="true" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipReal"
+                        style="@style/Widget.Material3.Chip.Filter"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Activités GPS" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipPlanned"
+                        style="@style/Widget.Material3.Chip.Filter"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Planifiées" />
+
+                </com.google.android.material.chip.ChipGroup>
+            </HorizontalScrollView>
         </LinearLayout>
-    </androidx.core.widget.NestedScrollView>
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvActivities"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:paddingTop="8dp"
+        android:clipToPadding="false"
+        tools:listitem="@layout/item_activity" />
 
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:id="@+id/fabAddActivity"
@@ -127,6 +105,6 @@
         android:text="Planifier"
         app:icon="@android:drawable/ic_input_add"
         app:backgroundTint="?attr/colorPrimary"
-        app:contentDescription="Planifier une activité" />
+        app:tint="?attr/colorOnPrimary" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

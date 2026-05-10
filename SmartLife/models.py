@@ -74,6 +74,8 @@ class ScheduleItem(BaseModel):
     time: str  # e.g., "08:30"
     activity_type: str
     location_name: Optional[str] = None
+    lat: Optional[float] = None  # Ajouté pour MongoDB
+    lng: Optional[float] = None  # Ajouté pour MongoDB
     duration: int
 
 class DaySchedule(BaseModel):
