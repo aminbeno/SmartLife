@@ -2,13 +2,14 @@ from fastapi import APIRouter, HTTPException, status
 from models import (
     UserData, UserResponse, SuccessResponse, ErrorResponse,
     ActivityData, HabitData, RecommendationData, VoiceLogData, FcmTokenUpdate, NamedLocation,
-    WeeklySchedule
+    WeeklySchedule, AIInsightsResponse
 )
 from database import (
     users_collection, activities_collection, habits_collection,
     recommendations_collection, voice_logs_collection, named_locations_collection,
     schedules_collection
 )
+from services.ai_service import generate_ai_coach_insights
 from bson import ObjectId
 from typing import List
 
@@ -119,7 +120,8 @@ async def get_weekly_schedule(user_id: str):
         # Return an empty schedule if none exists
         days = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"]
         return {"user_id": user_id, "days": [{"day_of_week": day, "items": []} for day in days]}
-    schedule["_id"] = str(schedule["_id"])
+    if "_id" in schedule:
+        schedule["_id"] = str(schedule["_id"])
     return schedule
 
 @router.post("/schedule", response_model=SuccessResponse)
@@ -131,3 +133,10 @@ async def save_weekly_schedule(schedule: WeeklySchedule):
         upsert=True
     )
     return {"status": "success", "message": "Schedule updated successfully"}
+
+# --- AI COACH ENDPOINT ---
+
+@router.get("/ai_insights/{user_id}", response_model=AIInsightsResponse)
+async def get_ai_insights(user_id: str):
+    insights = await generate_ai_coach_insights(user_id)
+    return insights

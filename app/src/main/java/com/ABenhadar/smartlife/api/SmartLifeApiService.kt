@@ -56,4 +56,8 @@ interface SmartLifeApiService {
 
     @POST("api/schedule")
     suspend fun saveWeeklySchedule(@Body schedule: weeklySchedule): SuccessResponse<Map<String, String>>
+
+    // --- AI COACH API ---
+    @GET("api/ai_insights/{user_id}")
+    suspend fun getAIInsights(@Path("user_id") userId: String): AIInsightsResponse
 }

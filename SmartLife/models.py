@@ -74,8 +74,8 @@ class ScheduleItem(BaseModel):
     time: str  # e.g., "08:30"
     activity_type: str
     location_name: Optional[str] = None
-    lat: Optional[float] = None  # Ajouté pour MongoDB
-    lng: Optional[float] = None  # Ajouté pour MongoDB
+    lat: Optional[float] = None
+    lng: Optional[float] = None
     duration: int
 
 class DaySchedule(BaseModel):
@@ -85,6 +85,12 @@ class DaySchedule(BaseModel):
 class WeeklySchedule(BaseModel):
     user_id: str
     days: List[DaySchedule]
+
+# --- AI Coach Models ---
+class AIInsightsResponse(BaseModel):
+    recommendations: List[str]
+    habits: List[str]
+    prediction: str
 
 # --- Generic Response ---
 class SuccessResponse(BaseModel):

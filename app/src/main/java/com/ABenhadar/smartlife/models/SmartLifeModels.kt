@@ -82,8 +82,8 @@ data class ScheduleItem(
     val time: String, // e.g., "08:30"
     val activity_type: String, // e.g., "Walking"
     val location_name: String? = null, // e.g., "Parc Central"
-    val lat: Double? = null, // Added
-    val lng: Double? = null, // Added
+    val lat: Double? = null,
+    val lng: Double? = null,
     val duration: Int // minutes
 )
 
@@ -95,6 +95,13 @@ data class DaySchedule(
 data class weeklySchedule(
     @SerializedName("user_id") val user_id: String,
     val days: List<DaySchedule>
+)
+
+// --- AI Coach Models ---
+data class AIInsightsResponse(
+    val recommendations: List<String>,
+    val habits: List<String>,
+    val prediction: String
 )
 
 // --- Generic Response ---
