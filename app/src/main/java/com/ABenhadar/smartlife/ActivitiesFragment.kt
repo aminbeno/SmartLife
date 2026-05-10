@@ -137,10 +137,12 @@ class ActivitiesFragment : Fragment(), MapEventsReceiver {
 
         val provider = GpsMyLocationProvider(requireContext())
         locationOverlay = object : MyLocationNewOverlay(provider, map) {
-            override fun onLocationChanged(location: Location, source: IMyLocationProvider) {
+            override fun onLocationChanged(location: Location?, source: IMyLocationProvider?) {
                 super.onLocationChanged(location, source)
-                lifecycleScope.launch(Dispatchers.Main) {
-                    updateLiveStats(location)
+                location?.let {
+                    lifecycleScope.launch(Dispatchers.Main) {
+                        updateLiveStats(it)
+                    }
                 }
             }
         }

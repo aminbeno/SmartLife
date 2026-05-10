@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="?attr/android:windowBackground">
@@ -21,18 +20,10 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Coach IA"
+                android:text="Coach Personnel"
                 android:textSize="28sp"
                 android:fontFamily="sans-serif-medium"
                 android:textColor="?attr/colorOnSurface" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:text="Votre guide personnel pour une vie équilibrée."
-                android:alpha="0.7"
-                android:textColor="?attr/colorOnSurfaceVariant" />
         </LinearLayout>
     </com.google.android.material.appbar.AppBarLayout>
 
@@ -45,44 +36,89 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingBottom="100dp">
+            android:paddingBottom="120dp">
 
-            <!-- Section Prédiction -->
+            <!-- Zone de l'Avatar Interactif -->
             <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cvAvatarContainer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="20dp"
                 android:layout_marginTop="8dp"
+                app:cardCornerRadius="32dp"
+                app:cardElevation="0dp"
+                app:strokeWidth="1dp"
+                app:strokeColor="?attr/colorPrimaryContainer"
+                app:cardBackgroundColor="?attr/colorSurface">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:padding="32dp">
+
+                    <FrameLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+
+                        <View
+                            android:id="@+id/vAvatarPulse"
+                            android:layout_width="140dp"
+                            android:layout_height="140dp"
+                            android:layout_gravity="center"
+                            android:background="@drawable/circle_pulse"
+                            android:visibility="invisible" />
+
+                        <com.google.android.material.imageview.ShapeableImageView
+                            android:id="@+id/ivCoachAvatar"
+                            android:layout_width="120dp"
+                            android:layout_height="120dp"
+                            android:layout_gravity="center"
+                            android:src="@mipmap/ic_logo"
+                            app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.Corner.Full"
+                            android:padding="4dp"
+                            app:strokeWidth="2dp"
+                            app:strokeColor="?attr/colorPrimary"
+                            android:background="?attr/colorSurface"
+                            android:contentDescription="Avatar du Coach" />
+                    </FrameLayout>
+
+                    <TextView
+                        android:id="@+id/tvCoachSpeech"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:text="Appuyez sur le micro pour me parler"
+                        android:textAlignment="center"
+                        android:textSize="18sp"
+                        android:fontFamily="sans-serif-medium"
+                        android:textColor="?attr/colorPrimary" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Section Prédiction Rapide -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="20dp"
+                android:layout_marginTop="24dp"
                 app:cardCornerRadius="24dp"
                 app:cardElevation="0dp"
-                app:strokeWidth="0dp"
-                app:cardBackgroundColor="?attr/colorPrimaryContainer">
+                app:cardBackgroundColor="?attr/colorSecondaryContainer">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:padding="20dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Prédiction pour demain"
-                        android:textSize="12sp"
-                        android:textAllCaps="true"
-                        android:letterSpacing="0.1"
-                        android:textColor="?attr/colorOnPrimaryContainer"
-                        android:alpha="0.8" />
-
                     <TextView
                         android:id="@+id/tvAIPrediction"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
                         android:text="..."
-                        android:textSize="18sp"
-                        android:fontFamily="sans-serif-medium"
-                        android:textColor="?attr/colorOnPrimaryContainer" />
+                        android:textSize="16sp"
+                        android:textColor="?attr/colorOnSecondaryContainer" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
@@ -92,31 +128,21 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="24dp"
                 android:layout_marginTop="32dp"
-                android:text="Habitudes détectées"
+                android:text="Vos Habitudes"
                 android:textSize="14sp"
                 android:textAllCaps="true"
                 android:letterSpacing="0.1"
-                android:textColor="?attr/colorPrimary"
+                android:textColor="?attr/colorOnSurfaceVariant"
                 android:textStyle="bold" />
 
-            <com.google.android.material.card.MaterialCardView
+            <TextView
+                android:id="@+id/tvDetectedHabits"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="20dp"
-                android:layout_marginTop="12dp"
-                app:cardCornerRadius="20dp"
-                app:cardElevation="2dp"
-                app:strokeWidth="0dp"
-                app:cardBackgroundColor="?attr/colorSurface">
-
-                <TextView
-                    android:id="@+id/tvDetectedHabits"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:padding="20dp"
-                    android:text="..."
-                    android:textColor="?attr/colorOnSurface" />
-            </com.google.android.material.card.MaterialCardView>
+                android:layout_marginHorizontal="24dp"
+                android:layout_marginTop="8dp"
+                android:text="..."
+                android:textColor="?attr/colorOnSurface" />
 
             <!-- Section Recommandations -->
             <TextView
@@ -128,7 +154,7 @@
                 android:textSize="14sp"
                 android:textAllCaps="true"
                 android:letterSpacing="0.1"
-                android:textColor="?attr/colorPrimary"
+                android:textColor="?attr/colorOnSurfaceVariant"
                 android:textStyle="bold" />
 
             <LinearLayout
@@ -146,7 +172,7 @@
         android:id="@+id/fabTalkToCoach"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="16dp"
+        android:layout_margin="24dp"
         android:layout_gravity="bottom|center_horizontal"
         android:text="Parler au Coach"
         app:icon="@android:drawable/ic_btn_speak_now"

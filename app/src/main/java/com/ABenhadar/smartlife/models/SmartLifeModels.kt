@@ -104,6 +104,15 @@ data class AIInsightsResponse(
     val prediction: String
 )
 
+data class ChatRequest(
+    val message: String
+)
+
+data class ChatResponse(
+    val status: String,
+    val response: String
+)
+
 // --- Generic Response ---
 data class SuccessResponse<T>(
     val status: String,

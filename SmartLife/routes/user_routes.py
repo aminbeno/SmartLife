@@ -9,11 +9,15 @@ from database import (
     recommendations_collection, voice_logs_collection, named_locations_collection,
     schedules_collection
 )
-from services.ai_service import generate_ai_coach_insights
+from services.ai_service import generate_ai_coach_insights, get_chat_response
 from bson import ObjectId
 from typing import List
+from pydantic import BaseModel
 
 router = APIRouter(prefix="/api", tags=["smartlife"])
+
+class ChatRequest(BaseModel):
+    message: str
 
 # --- USER ENDPOINTS ---
 
@@ -134,9 +138,14 @@ async def save_weekly_schedule(schedule: WeeklySchedule):
     )
     return {"status": "success", "message": "Schedule updated successfully"}
 
-# --- AI COACH ENDPOINT ---
+# --- AI COACH ENDPOINTS ---
 
 @router.get("/ai_insights/{user_id}", response_model=AIInsightsResponse)
 async def get_ai_insights(user_id: str):
     insights = await generate_ai_coach_insights(user_id)
     return insights
+
+@router.post("/ai_chat/{user_id}")
+async def ai_chat(user_id: str, request: ChatRequest):
+    response = await get_chat_response(user_id, request.message)
+    return {"status": "success", "response": response}
