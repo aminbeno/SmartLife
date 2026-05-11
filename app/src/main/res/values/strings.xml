@@ -62,14 +62,21 @@
     <string name="trends_icon_desc">Icône de tendances</string>
 
     <!-- Home Fragment Strings -->
-    <string name="home_greeting">Bonjour !</string>
+    <string name="home_greeting">Bonjour, %1$s !</string>
     <string name="home_subtitle">Comment vous sentez-vous aujourd\'hui ?</string>
-    <string name="companion_advice_label">CONSEIL DE VOTRE COMPAGNON</string>
-    <string name="default_recommendation">Il fait beau ! Et si on allait marcher 10 minutes pour s\'aérer l\'esprit ?</string>
+    <string name="companion_advice_label">LE CONSEIL DU COACH</string>
+    <string name="default_recommendation">Analyse de votre routine en cours...</string>
     <string name="btn_lets_go">C\'est parti</string>
     <string name="day_overview">Aperçu de votre journée</string>
     <string name="home_time_label">Temps Maison</string>
     <string name="activity_label">Activité</string>
+    <string name="activities_label">Activités</string>
+    <string name="active_time_label">Temps actif</string>
+    <string name="today_planning_label">Votre planning aujourd\'hui</string>
+    <string name="free_day_msg">Journée libre !</string>
+    <string name="frequent_places_label">Lieux favoris</string>
+    <string name="loading_habits_msg">Chargement des habitudes...</string>
+    <string name="no_habits_msg">Découverte de votre rythme de vie...</string>
 
     <!-- Login/Register Strings -->
     <string name="login_welcome_back">Ravi de vous revoir !</string>
