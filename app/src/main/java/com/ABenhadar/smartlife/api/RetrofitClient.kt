@@ -13,7 +13,7 @@ object RetrofitClient {
     // IMPORTANT : Pour l'émulateur Android, utilisez "10.0.2.2"
     // Pour un téléphone RÉEL, utilisez votre adresse IP WiFi réelle
     // Trouvez votre IP avec: ipconfig (Windows) ou ifconfig (Mac/Linux)
-    private const val LOCAL_IP = "192.168.11.171"  // IP WiFi réelle 
+    private const val LOCAL_IP = "192.168.11.171"  // IP WiFi réelle
     private const val BASE_URL = "http://$LOCAL_IP:8000/"
 
     private val gson: Gson by lazy {

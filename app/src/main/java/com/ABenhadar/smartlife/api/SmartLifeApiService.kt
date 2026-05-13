@@ -52,7 +52,10 @@ interface SmartLifeApiService {
 
     // --- SCHEDULE APIs ---
     @GET("api/schedule/{user_id}")
-    suspend fun getWeeklySchedule(@Path("user_id") userId: String): weeklySchedule
+     suspend fun getWeeklySchedule(
+        @Path("user_id") userId: String,
+        @Query("week_id") weekId: String? = null
+    ): weeklySchedule
 
     @POST("api/schedule")
     suspend fun saveWeeklySchedule(@Body schedule: weeklySchedule): SuccessResponse<Map<String, String>>

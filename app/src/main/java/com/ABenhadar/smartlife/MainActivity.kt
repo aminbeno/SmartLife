@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
@@ -17,21 +18,26 @@ class MainActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        // 1. Appliquer le thème AVANT super.onCreate
+        val sharedPref = getSharedPreferences("smartlife_prefs", Context.MODE_PRIVATE)
+        val isDarkMode = sharedPref.getBoolean("dark_mode", false)
+        if (isDarkMode) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+        } else {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+        }
+
         super.onCreate(savedInstanceState)
         
         auth = FirebaseAuth.getInstance()
         
-        // 1. Vérifier la connexion
         if (auth.currentUser == null) {
             startActivity(Intent(this, LoginActivity::class.java))
             finish()
             return
         }
 
-        // 2. Vérifier si l'Onboarding est terminé
-        val sharedPref = getSharedPreferences("smartlife_prefs", Context.MODE_PRIVATE)
         val onboardingComplete = sharedPref.getBoolean("onboarding_complete", false)
-        
         if (!onboardingComplete) {
             startActivity(Intent(this, OnboardingActivity::class.java))
             finish()
@@ -59,7 +65,7 @@ class MainActivity : AppCompatActivity() {
                 R.id.nav_home -> replaceFragment(HomeFragment())
                 R.id.nav_map -> replaceFragment(ActivitiesFragment())
                 R.id.nav_activities -> replaceFragment(ActivityListFragment())
-                R.id.nav_coach -> replaceFragment(CoachFragment()) // Remplacement de Reports par Coach
+                R.id.nav_coach -> replaceFragment(CoachFragment())
                 R.id.nav_settings -> replaceFragment(SettingsFragment())
             }
             true

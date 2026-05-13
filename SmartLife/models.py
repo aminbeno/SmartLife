@@ -30,10 +30,10 @@ class Location(BaseModel):
 
 class ActivityData(BaseModel):
     user_id: str
-    type: str  # e.g., "walking", "running"
+    type: str
     location: Location
     timestamp: datetime = Field(default_factory=datetime.utcnow)
-    duration: int  # in minutes
+    duration: int
 
 # --- Habits Models ---
 class FrequentPlace(BaseModel):
@@ -45,13 +45,13 @@ class FrequentPlace(BaseModel):
 class HabitData(BaseModel):
     user_id: str
     frequent_places: List[FrequentPlace]
-    active_hours: List[str]  # e.g., ["08:00", "18:00"]
+    active_hours: List[str]
 
 # --- Recommendations Models ---
 class RecommendationData(BaseModel):
     user_id: str
     message: str
-    type: str  # e.g., "health", "activity"
+    type: str
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
 # --- Voice Logs Models ---
@@ -71,7 +71,7 @@ class NamedLocation(BaseModel):
 
 # --- Schedule Models ---
 class ScheduleItem(BaseModel):
-    time: str  # e.g., "08:30"
+    time: str
     activity_type: str
     location_name: Optional[str] = None
     lat: Optional[float] = None
@@ -80,10 +80,12 @@ class ScheduleItem(BaseModel):
 
 class DaySchedule(BaseModel):
     day_of_week: str
+    date: Optional[str] = None
     items: List[ScheduleItem] = []
 
 class WeeklySchedule(BaseModel):
     user_id: str
+    week_id: str
     days: List[DaySchedule]
 
 # --- AI Coach Models ---
@@ -91,6 +93,7 @@ class AIInsightsResponse(BaseModel):
     recommendations: List[str]
     habits: List[str]
     prediction: str
+    health_score: Optional[int] = 0
 
 # --- Generic Response ---
 class SuccessResponse(BaseModel):

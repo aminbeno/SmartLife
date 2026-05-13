@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Palette Mode Sombre SmartLife -->
+    <color name="primary_color">#4db6ac</color> <!-- Teal plus clair pour le contraste -->
+    <color name="primary_light">#00675b</color>
+    <color name="primary_dark">#b2dfdb</color>
+
+    <color name="secondary_color">#ffcc80</color> <!-- Orange plus doux -->
+
+    <color name="bg_light">#121212</color> <!-- Noir profond Material -->
+    <color name="text_main">#E1E1E1</color>
+    <color name="text_secondary">#B0B0B0</color>
+    <color name="outline_variant">#333333</color>
+    <color name="white">#1E1E1E</color> <!-- Surface sombre -->
+</resources>

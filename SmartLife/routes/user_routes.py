@@ -11,16 +11,53 @@ from database import (
 )
 from services.ai_service import generate_ai_coach_insights, get_chat_response
 from bson import ObjectId
-from typing import List
+from typing import List, Optional
 from pydantic import BaseModel
+from datetime import datetime, timedelta
 
 router = APIRouter(prefix="/api", tags=["smartlife"])
 
 class ChatRequest(BaseModel):
     message: str
 
-# --- USER ENDPOINTS ---
+# --- SCHEDULE ENDPOINTS ---
 
+@router.get("/schedule/{user_id}", response_model=WeeklySchedule)
+async def get_weekly_schedule(user_id: str, week_id: Optional[str] = None):
+    # Si aucun week_id n'est fourni, on cherche la semaine actuelle (Lundi)
+    if not week_id:
+        now = datetime.now()
+        monday = now - timedelta(days=now.weekday())
+        week_id = monday.strftime("%Y-%m-%d")
+        
+    schedule = await schedules_collection.find_one({"user_id": user_id, "week_id": week_id})
+    
+    if not schedule:
+        # Retourner une structure vide synchronisée sur la semaine demandée
+        monday_dt = datetime.strptime(week_id, "%Y-%m-%d")
+        days_fr = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"]
+        days_list = []
+        for i, name in enumerate(days_fr):
+            date_str = (monday_dt + timedelta(days=i)).strftime("%Y-%m-%d")
+            days_list.append({"day_of_week": name, "date": date_str, "items": []})
+            
+        return {"user_id": user_id, "week_id": week_id, "days": days_list}
+        
+    if "_id" in schedule:
+        schedule["_id"] = str(schedule["_id"])
+    return schedule
+
+@router.post("/schedule", response_model=SuccessResponse)
+async def save_weekly_schedule(schedule: WeeklySchedule):
+    # Mise à jour basée sur l'utilisateur ET la semaine spécifique
+    result = await schedules_collection.replace_one(
+        {"user_id": schedule.user_id, "week_id": schedule.week_id},
+        schedule.model_dump(),
+        upsert=True
+    )
+    return {"status": "success", "message": f"Schedule for week {schedule.week_id} updated"}
+
+# --- AUTRES ENDPOINTS (Conservés) ---
 @router.post("/register_user", response_model=SuccessResponse, status_code=status.HTTP_201_CREATED)
 async def register_user(user: UserData):
     existing_user = await users_collection.find_one({"uid": user.uid})
@@ -39,25 +76,10 @@ async def get_user(uid: str):
 
 @router.put("/update_user/{uid}", response_model=SuccessResponse)
 async def update_user(uid: str, user: UserData):
-    result = await users_collection.update_one(
-        {"uid": uid},
-        {"$set": user.model_dump(exclude={"uid"})}
-    )
+    result = await users_collection.update_one({"uid": uid}, {"$set": user.model_dump(exclude={"uid"})})
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="User not found")
     return {"status": "success", "message": "User updated successfully"}
-
-@router.put("/user/{uid}/fcm-token", response_model=SuccessResponse)
-async def update_user_fcm_token(uid: str, token_update: FcmTokenUpdate):
-    result = await users_collection.update_one(
-        {"uid": uid},
-        {"$set": {"fcmToken": token_update.fcmToken}}
-    )
-    if result.matched_count == 0:
-        raise HTTPException(status_code=404, detail="User not found")
-    return {"status": "success", "message": "FCM token updated successfully"}
-
-# --- ACTIVITY ENDPOINTS ---
 
 @router.post("/activity", response_model=SuccessResponse)
 async def add_activity(activity: ActivityData):
@@ -67,39 +89,13 @@ async def add_activity(activity: ActivityData):
 @router.get("/activities/{user_id}", response_model=List[ActivityData])
 async def get_activities(user_id: str):
     cursor = activities_collection.find({"user_id": user_id})
-    activities = await cursor.to_list(length=100)
-    return activities
-
-# --- HABITS ENDPOINTS ---
+    return await cursor.to_list(length=100)
 
 @router.get("/habits/{user_id}", response_model=HabitData)
 async def get_habits(user_id: str):
     habits = await habits_collection.find_one({"user_id": user_id})
-    if not habits:
-        raise HTTPException(status_code=404, detail="Habits not found")
+    if not habits: raise HTTPException(status_code=404, detail="Habits not found")
     return habits
-
-# --- RECOMMENDATION ENDPOINTS ---
-
-@router.post("/recommendation", response_model=SuccessResponse)
-async def add_recommendation(rec: RecommendationData):
-    result = await recommendations_collection.insert_one(rec.model_dump())
-    return {"status": "success", "message": "Recommendation saved", "data": {"id": str(result.inserted_id)}}
-
-@router.get("/recommendations/{user_id}", response_model=List[RecommendationData])
-async def get_recommendations(user_id: str):
-    cursor = recommendations_collection.find({"user_id": user_id})
-    recs = await cursor.to_list(length=50)
-    return recs
-
-# --- VOICE ENDPOINTS ---
-
-@router.post("/voice", response_model=SuccessResponse)
-async def add_voice_log(voice: VoiceLogData):
-    result = await voice_logs_collection.insert_one(voice.model_dump())
-    return {"status": "success", "message": "Voice log saved", "data": {"id": str(result.inserted_id)}}
-
-# --- NAMED LOCATION ENDPOINTS ---
 
 @router.post("/named_locations", response_model=SuccessResponse, status_code=status.HTTP_201_CREATED)
 async def add_named_location(location: NamedLocation):
@@ -115,35 +111,9 @@ async def get_named_locations(user_id: str):
         del loc['_id']
     return locations
 
-# --- SCHEDULE ENDPOINTS ---
-
-@router.get("/schedule/{user_id}", response_model=WeeklySchedule)
-async def get_weekly_schedule(user_id: str):
-    schedule = await schedules_collection.find_one({"user_id": user_id})
-    if not schedule:
-        # Return an empty schedule if none exists
-        days = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"]
-        return {"user_id": user_id, "days": [{"day_of_week": day, "items": []} for day in days]}
-    if "_id" in schedule:
-        schedule["_id"] = str(schedule["_id"])
-    return schedule
-
-@router.post("/schedule", response_model=SuccessResponse)
-async def save_weekly_schedule(schedule: WeeklySchedule):
-    # Update if exists, else insert
-    result = await schedules_collection.replace_one(
-        {"user_id": schedule.user_id},
-        schedule.model_dump(),
-        upsert=True
-    )
-    return {"status": "success", "message": "Schedule updated successfully"}
-
-# --- AI COACH ENDPOINTS ---
-
 @router.get("/ai_insights/{user_id}", response_model=AIInsightsResponse)
 async def get_ai_insights(user_id: str):
-    insights = await generate_ai_coach_insights(user_id)
-    return insights
+    return await generate_ai_coach_insights(user_id)
 
 @router.post("/ai_chat/{user_id}")
 async def ai_chat(user_id: str, request: ChatRequest):

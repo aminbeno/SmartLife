@@ -1,6 +1,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Base.Theme.SmartLife" parent="Theme.Material3.Light.NoActionBar">
+    <style name="Base.Theme.SmartLife" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Couleurs Principales (Système de Design) -->
         <!-- Primaire : Bleu-Vert apaisant -->
         <item name="colorPrimary">@color/primary_color</item>
@@ -18,7 +18,7 @@
         <item name="android:windowBackground">@color/bg_light</item>
         <item name="colorSurface">@color/white</item>
         <item name="colorOnSurface">@color/text_main</item>
-        <item name="colorSurfaceVariant">#EEEEEE</item>
+        <item name="colorSurfaceVariant">@color/outline_variant</item>
         <item name="colorOnSurfaceVariant">@color/text_secondary</item>
         <item name="colorOutlineVariant">@color/outline_variant</item>
 

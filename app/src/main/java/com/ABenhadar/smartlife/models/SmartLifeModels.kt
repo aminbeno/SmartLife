@@ -36,7 +36,7 @@ data class ActivityData(
     val location: Location,
     val timestamp: String? = null,
     val duration: Int,
-    val locationName: String? = null // Champ ajouté pour l'affichage du journal
+    val locationName: String? = null
 )
 
 // --- Habits Models ---
@@ -79,21 +79,23 @@ data class NamedLocation(
 
 // --- Schedule Models ---
 data class ScheduleItem(
-    val time: String, // e.g., "08:30"
-    val activity_type: String, // e.g., "Walking"
-    val location_name: String? = null, // e.g., "Parc Central"
+    val time: String,
+    val activity_type: String,
+    val location_name: String? = null,
     val lat: Double? = null,
     val lng: Double? = null,
-    val duration: Int // minutes
+    val duration: Int
 )
 
 data class DaySchedule(
-    val day_of_week: String, // e.g., "Monday"
+    val day_of_week: String,
+    val date: String? = null,
     val items: List<ScheduleItem> = emptyList()
 )
 
 data class weeklySchedule(
     @SerializedName("user_id") val user_id: String,
+    @SerializedName("week_id") val week_id: String,
     val days: List<DaySchedule>
 )
 
@@ -101,7 +103,9 @@ data class weeklySchedule(
 data class AIInsightsResponse(
     val recommendations: List<String>,
     val habits: List<String>,
-    val prediction: String
+    val prediction: String,
+    @SerializedName("health_score")
+    val healthScore: Int? = null
 )
 
 data class ChatRequest(

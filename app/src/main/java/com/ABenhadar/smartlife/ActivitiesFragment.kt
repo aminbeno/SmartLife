@@ -37,6 +37,7 @@ import com.google.android.material.card.MaterialCardView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.*
+import org.json.JSONObject
 import org.osmdroid.events.MapEventsReceiver
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
@@ -47,6 +48,9 @@ import org.osmdroid.views.overlay.Polyline
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
 import org.osmdroid.views.overlay.mylocation.IMyLocationProvider
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
+import java.net.HttpURLConnection
+import java.net.URL
+import java.text.SimpleDateFormat
 import java.util.*
 
 class ActivitiesFragment : Fragment(), MapEventsReceiver {
@@ -72,6 +76,7 @@ class ActivitiesFragment : Fragment(), MapEventsReceiver {
     
     private var searchMarker: Marker? = null
     private var longPressMarker: Marker? = null
+    private var routingPolyline: Polyline? = null
     private var searchJob: Job? = null
     private var startLocation: Location? = null
     private var totalDistance = 0f
@@ -153,12 +158,94 @@ class ActivitiesFragment : Fragment(), MapEventsReceiver {
             lifecycleScope.launch(Dispatchers.Main) {
                 map.controller.animateTo(locationOverlay.myLocation)
                 map.controller.setZoom(17.5)
+                // Au premier fix GPS, on cherche la prochaine activité et on trace le chemin
+                loadNextActivityAndRoute()
             }
         }
         
         map.overlays.add(locationOverlay)
         map.overlays.add(0, MapEventsOverlay(this))
-        map.controller.setCenter(GeoPoint(48.8583, 2.2944))
+        
+        // Par défaut, centrer sur le Maroc (Casablanca) au lieu de Paris
+        map.controller.setCenter(GeoPoint(33.5731, -7.5898))
+    }
+
+    private suspend fun loadNextActivityAndRoute() {
+        val userId = auth.currentUser?.uid ?: return
+        
+        val cal = Calendar.getInstance(Locale.FRANCE)
+        cal.set(Calendar.HOUR_OF_DAY, 0); cal.set(Calendar.MINUTE, 0); cal.set(Calendar.SECOND, 0)
+        while (cal.get(Calendar.DAY_OF_WEEK) != Calendar.MONDAY) { cal.add(Calendar.DAY_OF_MONTH, -1) }
+        val weekId = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(cal.time)
+
+        try {
+            val schedule = apiService.getWeeklySchedule(userId, weekId)
+            val currentTime = SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date())
+            val currentDayFr = SimpleDateFormat("EEEE", Locale.FRENCH).format(Date()).replaceFirstChar { it.uppercase() }
+            
+            val todayItems = schedule.days.find { it.day_of_week.equals(currentDayFr, ignoreCase = true) }?.items
+            val nextItem = todayItems?.filter { it.time > currentTime }?.minByOrNull { it.time }
+
+            // Vérification de sécurité : on ignore les coordonnées (0,0) ou manifestement erronées
+            if (nextItem?.lat != null && nextItem.lng != null && nextItem.lat != 0.0 && nextItem.lng != 0.0) {
+                drawRouteTo(GeoPoint(nextItem.lat, nextItem.lng))
+            }
+        } catch (e: Exception) { Log.e("Routing", "Error loading schedule", e) }
+    }
+
+    private fun drawRouteTo(destination: GeoPoint) {
+        val start = locationOverlay.myLocation ?: run {
+            Toast.makeText(context, "Position GPS non disponible", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        // Sécurité : Si la destination est à plus de 5000km, c'est probablement une erreur (USA/Océan)
+        val distanceToDest = start.distanceToAsDouble(destination)
+        if (distanceToDest > 5000000) {
+            Log.w("Routing", "Destination trop lointaine ($distanceToDest m), probablement une erreur de localisation.")
+            return
+        }
+        
+        lifecycleScope.launch(Dispatchers.IO) {
+            try {
+                val urlString = "https://router.project-osrm.org/route/v1/driving/${start.longitude},${start.latitude};${destination.longitude},${destination.latitude}?overview=full&geometries=geojson"
+                val url = URL(urlString)
+                val connection = url.openConnection() as HttpURLConnection
+                connection.setRequestProperty("User-Agent", "SmartLifeApp-Android") 
+                connection.connectTimeout = 5000
+                connection.readTimeout = 5000
+
+                if (connection.responseCode == HttpURLConnection.HTTP_OK) {
+                    val response = connection.inputStream.bufferedReader().use { it.readText() }
+                    val json = JSONObject(response)
+                    val routes = json.getJSONArray("routes")
+                    
+                    if (routes.length() > 0) {
+                        val geometry = routes.getJSONObject(0).getJSONObject("geometry")
+                        val coords = geometry.getJSONArray("coordinates")
+                        val points = mutableListOf<GeoPoint>()
+                        
+                        for (i in 0 until coords.length()) {
+                            val c = coords.getJSONArray(i)
+                            points.add(GeoPoint(c.getDouble(1), c.getDouble(0)))
+                        }
+                        
+                        withContext(Dispatchers.Main) {
+                            routingPolyline?.let { map.overlays.remove(it) }
+                            routingPolyline = Polyline().apply {
+                                setPoints(points)
+                                outlinePaint.color = Color.parseColor("#1A73E8")
+                                outlinePaint.strokeWidth = 10f
+                            }
+                            map.overlays.add(routingPolyline)
+                            map.invalidate()
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e("Routing", "Route calculation failed", e)
+            }
+        }
     }
 
     private fun updateLiveStats(location: Location) {
@@ -249,6 +336,7 @@ class ActivitiesFragment : Fragment(), MapEventsReceiver {
         searchJob?.cancel()
         searchJob = lifecycleScope.launch {
             delay(600) 
+            // Amélioration : Utiliser la localisation actuelle pour filtrer les résultats (Maroc)
             val geocoder = Geocoder(requireContext(), Locale.getDefault())
             val results = withContext(Dispatchers.IO) {
                 try { 
@@ -256,6 +344,7 @@ class ActivitiesFragment : Fragment(), MapEventsReceiver {
                         null
                     } else {
                         @Suppress("DEPRECATION")
+                        // Essayer de limiter la recherche à la zone du Maroc si possible
                         geocoder.getFromLocationName(query, 5)
                     }
                 } catch (e: Exception) { null }
@@ -317,6 +406,11 @@ class ActivitiesFragment : Fragment(), MapEventsReceiver {
                 position = geoPoint
                 title = address.getAddressLine(0) ?: locationName
                 icon = ContextCompat.getDrawable(requireContext(), R.drawable.ic_marker_search)
+                setOnMarkerClickListener { marker, _ ->
+                    drawRouteTo(marker.position)
+                    marker.showInfoWindow()
+                    true
+                }
             }
             map.overlays.add(searchMarker)
             map.controller.animateTo(geoPoint)
@@ -397,6 +491,11 @@ class ActivitiesFragment : Fragment(), MapEventsReceiver {
                         position = GeoPoint(place.lat, place.lng)
                         title = place.name
                         subDescription = String.format(Locale.getDefault(), "%d visites", place.visits)
+                        setOnMarkerClickListener { marker, _ ->
+                            drawRouteTo(marker.position)
+                            marker.showInfoWindow()
+                            true
+                        }
                     }
                     map.overlays.add(marker)
                 }
@@ -433,6 +532,11 @@ class ActivitiesFragment : Fragment(), MapEventsReceiver {
                         position = GeoPoint(location.lat, location.lng)
                         title = location.name
                         icon = ContextCompat.getDrawable(requireContext(), R.drawable.ic_marker_star)
+                        setOnMarkerClickListener { marker, _ ->
+                            drawRouteTo(marker.position)
+                            marker.showInfoWindow()
+                            true
+                        }
                     }
                     map.overlays.add(m)
                 }

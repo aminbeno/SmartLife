@@ -1,16 +1,21 @@
+# Android
 *.iml
 .gradle
 /local.properties
-/.idea/caches
-/.idea/libraries
-/.idea/modules.xml
-/.idea/workspace.xml
-/.idea/navEditor.xml
-/.idea/assetWizardSettings.xml
-.DS_Store
+/.idea/
 /build
 /captures
 .externalNativeBuild
 .cxx
-local.properties
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
 .env
+SmartLife/.env
+.pytest_cache/
+
+# OS
+.DS_Store

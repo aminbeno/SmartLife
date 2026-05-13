@@ -92,14 +92,22 @@
 
     <!-- Settings Strings -->
     <string name="settings_title">Paramètres</string>
-    <string name="settings_subtitle">Personnalisez votre expérience avec votre compagnon.</string>
+    <string name="settings_subtitle">Personnalisez votre expérience SmartLife.</string>
     <string name="preferences_header">Préférences</string>
-    <string name="smart_recommendations">Recommandations intelligentes</string>
+    <string name="smart_recommendations">Recommandations IA</string>
     <string name="well_being_header">Bien-être</string>
-    <string name="set_goals_label">Modifier mes objectifs quotidiens</string>
+    <string name="set_goals_label">Objectifs quotidiens</string>
     <string name="account_header">Compte</string>
     <string name="manage_profile_label">Gérer mon profil</string>
     <string name="logout_label">Se déconnecter</string>
+    <string name="appearance_header">Apparence</string>
+    <string name="dark_mode_label">Mode Sombre</string>
+    <string name="support_header">Support</string>
+    <string name="about_app_label">À propos de SmartLife</string>
+    <string name="data_management_header">Données</string>
+    <string name="export_data_label">Exporter mes données</string>
+    <string name="delete_account_label">Supprimer mon compte</string>
+    <string name="about_desc">SmartLife v1.1\nVotre compagnon bienveillant pour une vie équilibrée.\n\nDéveloppé pour vous aider à suivre vos habitudes et atteindre vos objectifs au quotidien.</string>
 
     <!-- Profile/Edit Strings -->
     <string name="profile_subtitle">Vos informations personnelles en un coup d\'œil.</string>
