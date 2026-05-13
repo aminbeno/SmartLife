@@ -10,7 +10,7 @@
     <ImageView
         android:layout_width="24dp"
         android:layout_height="24dp"
-        android:src="@android:drawable/ic_menu_mylocation"
+        android:src="@drawable/ic_round_place_24"
         android:alpha="0.6"
         android:contentDescription="Lieu" />
 

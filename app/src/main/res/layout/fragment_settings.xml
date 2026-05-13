@@ -62,7 +62,7 @@
                     android:padding="16dp"
                     android:text="Mode Sombre"
                     app:switchTextAppearance="@style/TextAppearance.Material3.BodyLarge"
-                    app:thumbIcon="@android:drawable/ic_menu_day" />
+                    app:thumbIcon="@drawable/ic_round_light_mode_24" />
 
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
@@ -142,7 +142,7 @@
                     android:padding="16dp"
                     android:text="Gérer mon profil"
                     android:textAlignment="viewStart"
-                    app:icon="@android:drawable/ic_menu_myplaces" />
+                    app:icon="@drawable/ic_round_person_24" />
 
                 <View
                     android:layout_width="match_parent"
@@ -158,7 +158,7 @@
                     android:padding="16dp"
                     android:text="Objectifs quotidiens"
                     android:textAlignment="viewStart"
-                    app:icon="@android:drawable/ic_menu_edit" />
+                    app:icon="@drawable/ic_round_edit_24" />
 
                 <View
                     android:layout_width="match_parent"
@@ -175,7 +175,7 @@
                     android:text="Se déconnecter"
                     android:textAlignment="viewStart"
                     android:textColor="?attr/colorError"
-                    app:icon="@android:drawable/ic_lock_power_off"
+                    app:icon="@drawable/ic_round_logout_24"
                     app:iconTint="?attr/colorError" />
 
             </LinearLayout>
@@ -216,7 +216,7 @@
                     android:padding="16dp"
                     android:text="À propos de SmartLife"
                     android:textAlignment="viewStart"
-                    app:icon="@android:drawable/ic_menu_info_details" />
+                    app:icon="@drawable/ic_round_info_24" />
 
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>

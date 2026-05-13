@@ -89,7 +89,7 @@
                     app:boxCornerRadiusBottomStart="12dp"
                     app:boxCornerRadiusTopEnd="12dp"
                     app:boxCornerRadiusTopStart="12dp"
-                    app:startIconDrawable="@android:drawable/ic_menu_my_calendar">
+                    app:startIconDrawable="@drawable/ic_round_calendar_today_24">
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/etEditBirthDate"
                         android:layout_width="match_parent"

@@ -19,7 +19,7 @@
         <ImageView
             android:layout_width="32dp"
             android:layout_height="32dp"
-            android:src="@android:drawable/ic_menu_myplaces"
+            android:src="@drawable/ic_round_place_24"
             app:tint="?attr/colorPrimary" />
 
         <TextView

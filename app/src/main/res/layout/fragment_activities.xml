@@ -92,7 +92,7 @@
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
-    <!-- Carte de recommandation (Proactive) - RESTAURÉE -->
+    <!-- Carte de recommandation (Proactive) -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cvRecommendation"
         android:layout_width="match_parent"
@@ -116,7 +116,7 @@
             <ImageView
                 android:layout_width="32dp"
                 android:layout_height="32dp"
-                android:src="@android:drawable/ic_dialog_info"
+                android:src="@drawable/ic_round_info_24"
                 app:tint="?attr/colorOnPrimaryContainer"
                 android:contentDescription="Info" />
 
@@ -136,7 +136,7 @@
                 android:layout_width="32dp"
                 android:layout_height="32dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
-                android:src="@android:drawable/ic_menu_close_clear_cancel"
+                android:src="@drawable/ic_round_close_24"
                 app:tint="?attr/colorOnPrimaryContainer"
                 android:contentDescription="Fermer" />
         </LinearLayout>
@@ -149,7 +149,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="100dp"
-        android:src="@android:drawable/ic_menu_mylocation"
+        android:src="@drawable/ic_round_my_location_24"
         app:backgroundTint="?attr/colorSurface"
         app:tint="?attr/colorPrimary"
         app:fabSize="mini"
@@ -176,7 +176,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Démarrer"
-                app:icon="@android:drawable/ic_media_play"
+                app:icon="@drawable/ic_round_play_arrow_24"
                 app:cornerRadius="24dp" />
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnStopTracking"
@@ -186,7 +186,7 @@
                 android:text="Arrêter"
                 android:visibility="gone"
                 android:textColor="?attr/colorError"
-                app:icon="@android:drawable/ic_media_pause"
+                app:icon="@drawable/ic_round_pause_24"
                 app:iconTint="?attr/colorError"
                 app:cornerRadius="24dp" />
         </LinearLayout>
@@ -197,7 +197,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="20dp"
-        android:src="@android:drawable/ic_btn_speak_now"
+        android:src="@drawable/ic_round_mic_24"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:contentDescription="Voix" />

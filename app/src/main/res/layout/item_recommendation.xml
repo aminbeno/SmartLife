@@ -20,7 +20,7 @@
         <ImageView
             android:layout_width="24dp"
             android:layout_height="24dp"
-            android:src="@android:drawable/ic_dialog_info"
+            android:src="@drawable/ic_round_info_24"
             app:tint="?attr/colorPrimary"
             android:contentDescription="Icon" />
 

@@ -51,7 +51,7 @@
                 <ImageView
                     android:layout_width="48dp"
                     android:layout_height="48dp"
-                    android:src="@android:drawable/btn_star_big_on"
+                    android:src="@drawable/ic_round_star_24"
                     android:contentDescription="@string/star_icon_desc"
                     app:tint="?attr/colorSecondary" />
 
@@ -113,7 +113,7 @@
                     android:layout_width="64dp"
                     android:layout_height="64dp"
                     android:alpha="0.2"
-                    android:src="@android:drawable/ic_menu_sort_by_size"
+                    android:src="@drawable/ic_round_sort_24"
                     android:contentDescription="@string/trends_icon_desc"
                     app:tint="?attr/colorPrimary" />
 

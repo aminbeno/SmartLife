@@ -28,7 +28,7 @@
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:layout_gravity="center"
-                android:src="@android:drawable/ic_menu_directions"
+                android:src="@drawable/ic_round_directions_run_24"
                 app:tint="?attr/colorPrimary" />
         </com.google.android.material.card.MaterialCardView>
 

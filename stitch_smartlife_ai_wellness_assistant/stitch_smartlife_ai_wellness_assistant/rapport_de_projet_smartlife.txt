@@ -1,0 +1,65 @@
+Rapport de Projet : SmartLife – Assistant Bien-être Intelligent
+1. Vision et Objectifs
+SmartLife est une application Android de santé et de bien-être qui combine le suivi d'activité physique en temps réel avec l'intelligence artificielle générative pour offrir un coaching personnalisé.
+•
+Objectif principal : Transformer les données d'activité brute (marche, sport, sommeil) en conseils actionnables grâce à un Coach IA.
+•
+Public cible : Personnes souhaitant améliorer leur hygiène de vie avec un accompagnement interactif et motivant.
+2. Architecture Technique
+•
+Frontend : Android Natif (Kotlin), utilisant Material Design 3 pour une interface moderne et fluide.
+•
+Backend : FastAPI (Python) hébergé localement ou sur serveur, gérant la logique métier.
+•
+Intelligence Artificielle : Intégration de l'API Groq (modèles Llama/Mixtral) ou Gemini pour l'analyse comportementale et le chat conversationnel.
+•
+Base de données : MongoDB (via Motor) pour le stockage asynchrone des données utilisateurs et historiques.
+•
+Services tiers : Firebase (Auth/Messaging), OpenStreetMap (OSMDroid) pour le suivi GPS.
+3. Structure de l'Application (Pages Clés)
+A. Dashboard (Fragment Home)
+Le centre de contrôle de l'utilisateur.
+•
+Composants :
+◦
+Indicateurs de progression circulaires (Score de bien-être, Objectif du jour).
+◦
+Graphique hebdomadaire d'activité.
+◦
+Card "Conseil IA" : Une recommandation dynamique générée en fonction des dernières données.
+◦
+Actions rapides : Bouton de suivi, planning et accès direct au Coach.
+B. Suivi d'Activité (Fragment Activities)
+Permet d'enregistrer les performances physiques.
+•
+Composants :
+◦
+Carte interactive (OSMDroid) pour visualiser le trajet.
+◦
+Chronomètre et calcul de distance en temps réel.
+◦
+Historique des sessions passées (Listes/Cards).
+C. Coach IA (Fragment AI Chat)
+Interface conversationnelle pour interagir avec l'assistant.
+•
+Composants :
+◦
+Interface de messagerie (RecyclerView).
+◦
+Analyse des habitudes ("L'œil du coach") basée sur les données du backend.
+
+D. Profil et Paramètres (Activity Profile / Edit Profile)
+Gestion des données personnelles et personnalisation de l'expérience.
+•
+Composants :
+◦
+Formulaires de modification.
+◦
+Indicateur de statut (en ligne/hors ligne) relié au serveur API.
+4. Fonctionnalités Innovantes
+1.
+Analyse Prédictive : L'IA ne se contente pas d'afficher des chiffres, elle interprète les baisses de régime et propose des solutions (ex: "Vous avez moins marché cette semaine, essayez une session de 10 min ce soir").
+2.
+Synchronisation Backend-Mobile : Utilisation de Retrofit pour une communication fluide entre le smartphone et le moteur d'IA en Python.
+3.
+Interface Adaptative : Utilisation du SwipeRefreshLayout et du NestedScrollView pour une navigation agréable même avec beaucoup de données.

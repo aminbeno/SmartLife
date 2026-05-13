@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SmartLife Settings</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-tint": "#006b5f",
+                    "tertiary-container": "#ffad3a",
+                    "primary-container": "#2dd4bf",
+                    "on-secondary": "#ffffff",
+                    "surface-container-highest": "#d3e4fe",
+                    "surface": "#f8f9ff",
+                    "error": "#ba1a1a",
+                    "secondary-fixed": "#e1e0ff",
+                    "on-surface-variant": "#3c4a46",
+                    "on-primary-container": "#00574d",
+                    "inverse-primary": "#3cddc7",
+                    "tertiary-fixed-dim": "#ffb95f",
+                    "secondary-container": "#6063ee",
+                    "surface-container-low": "#eff4ff",
+                    "secondary": "#4648d4",
+                    "tertiary": "#855300",
+                    "inverse-surface": "#213145",
+                    "on-secondary-fixed": "#07006c",
+                    "on-primary-fixed-variant": "#005047",
+                    "primary-fixed-dim": "#3cddc7",
+                    "outline": "#6b7a76",
+                    "on-secondary-fixed-variant": "#2f2ebe",
+                    "primary-fixed": "#62fae3",
+                    "surface-variant": "#d3e4fe",
+                    "surface-container-lowest": "#ffffff",
+                    "on-secondary-container": "#fffbff",
+                    "on-background": "#0b1c30",
+                    "secondary-fixed-dim": "#c0c1ff",
+                    "on-error-container": "#93000a",
+                    "on-tertiary": "#ffffff",
+                    "primary": "#006b5f",
+                    "on-tertiary-fixed-variant": "#653e00",
+                    "surface-container-high": "#dce9ff",
+                    "surface-dim": "#cbdbf5",
+                    "on-tertiary-fixed": "#2a1700",
+                    "tertiary-fixed": "#ffddb8",
+                    "on-error": "#ffffff",
+                    "on-tertiary-container": "#6d4400",
+                    "background": "#f8f9ff",
+                    "error-container": "#ffdad6",
+                    "on-primary": "#ffffff",
+                    "surface-container": "#e5eeff",
+                    "on-surface": "#0b1c30",
+                    "outline-variant": "#bacac5",
+                    "surface-bright": "#f8f9ff",
+                    "inverse-on-surface": "#eaf1ff",
+                    "on-primary-fixed": "#00201c"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "lg": "24px",
+                    "sm": "8px",
+                    "xl": "32px",
+                    "md": "16px",
+                    "margin-mobile": "16px",
+                    "gutter-mobile": "12px",
+                    "baseline": "4px",
+                    "xs": "4px"
+            },
+            "fontFamily": {
+                    "title-lg": ["Inter"],
+                    "body-md": ["Inter"],
+                    "label-sm": ["Inter"],
+                    "label-lg": ["Inter"],
+                    "headline-lg": ["Inter"],
+                    "title-md": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "display-lg": ["Inter"],
+                    "headline-sm": ["Inter"]
+            },
+            "fontSize": {
+                    "title-lg": ["22px", {"lineHeight": "28px", "letterSpacing": "0px", "fontWeight": "500"}],
+                    "body-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.25px", "fontWeight": "400"}],
+                    "label-sm": ["11px", {"lineHeight": "16px", "letterSpacing": "0.5px", "fontWeight": "500"}],
+                    "label-lg": ["14px", {"lineHeight": "20px", "letterSpacing": "0.1px", "fontWeight": "500"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "0px", "fontWeight": "600"}],
+                    "title-md": ["16px", {"lineHeight": "24px", "letterSpacing": "0.15px", "fontWeight": "500"}],
+                    "body-lg": ["16px", {"lineHeight": "24px", "letterSpacing": "0.5px", "fontWeight": "400"}],
+                    "display-lg": ["57px", {"lineHeight": "64px", "letterSpacing": "-0.25px", "fontWeight": "400"}],
+                    "headline-sm": ["24px", {"lineHeight": "32px", "letterSpacing": "0px", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .settings-card-shadow {
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface min-h-screen pb-32">
+<!-- TopAppBar -->
+<header class="bg-surface/80 backdrop-blur-md flex justify-between items-center px-margin-mobile h-16 w-full z-50 fixed top-0">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full overflow-hidden bg-surface-container">
+<img alt="Profile" class="w-full h-full object-cover" data-alt="A professional headshot of a smiling young man with dark hair and a warm expression, set against a soft, out-of-focus urban background. The lighting is natural and high-key, reflecting a modern, healthy lifestyle brand aesthetic. The color palette is vibrant yet professional, aligning with a clean and sophisticated digital application interface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDQPbWWNE4s_kVxme7h_VF0tlJ_kEyuW3PIGh1XpHKbDR5ogPkoxhv7hd4d_QCrwqYKdFTseE6EaBRqGjY2z9XtcLaUQ8XHxMlaB5j42YWWVlpCc63MCfSG9n4muJ0gz9I2mmbTfIp-6FkbWwzez09w8tCxohh4FwFulAs3rY9etEyMRiqcon28PutmW8ZXPmdNTMWJh1HHpTTmipbNY5TFekwrgHjc88lG0VolIpz63aik5iukhHaYFa7XZldDLmOhhkTUmGhTNpWD"/>
+</div>
+<span class="font-headline-sm text-headline-sm font-semibold text-primary">SmartLife</span>
+</div>
+<button class="material-symbols-outlined text-primary hover:bg-surface-container-low transition-colors p-2 rounded-full active:scale-95 duration-100" data-icon="notifications">
+            notifications
+        </button>
+</header>
+<main class="mt-20 px-margin-mobile max-w-2xl mx-auto space-y-md">
+<!-- Profile Summary Section -->
+<section class="bg-surface-container-lowest p-lg rounded-xl border border-[#E2E8F0] settings-card-shadow flex items-center gap-md">
+<div class="w-16 h-16 rounded-full overflow-hidden border-2 border-primary-container">
+<img alt="User Profile" class="w-full h-full object-cover" data-alt="Detailed close-up portrait of a user for a health application, showing a friendly and energetic person. The lighting is bright and airy, suggesting vitality and wellness. The image is framed in a circular crop, maintaining a clean and professional look consistent with high-end Material Design 3 standards and a mint-and-indigo color theme." src="https://lh3.googleusercontent.com/aida-public/AB6AXuANQX-ZX8HoR9lrgt0bZSL3XS6O1IbRlaiGgajVIE0Tsu5C5bdno1M5LDGKq_lgT_BsgUNApE9iz1WqncH-xuHt0WhKPOwCYpPB5QbwcyV3Q06TDCGenyBtXkDBwMwZqnrvHT1VPb3GGqVdE7tp6o-23ymLDxKy-aGxT6ZwTAxEPeMhzKOegQNgYS2mLQicWgigDX-2FHKwSqSL0qCQUs1eRcW1QuW10tB_i8F7wVxXqk3-cgv66L7HTmOy7MaAZHEcdSWiM91Gbcuc"/>
+</div>
+<div>
+<h1 class="font-title-lg text-title-lg text-on-surface">Alex Johnson</h1>
+<p class="font-body-md text-body-md text-on-surface-variant">Premium Member since 2023</p>
+</div>
+<button class="ml-auto text-primary material-symbols-outlined p-2 rounded-full hover:bg-surface-container-low transition-all">
+                edit
+            </button>
+</section>
+<!-- Account Section -->
+<section>
+<h2 class="font-label-lg text-label-lg text-primary mb-sm px-1">Account</h2>
+<div class="bg-surface-container-lowest rounded-xl border border-[#E2E8F0] settings-card-shadow overflow-hidden">
+<button class="w-full flex items-center gap-md p-md hover:bg-surface-container-low transition-all border-b border-outline-variant/30 active:scale-[0.98] duration-100">
+<span class="material-symbols-outlined text-secondary" data-icon="mail">mail</span>
+<div class="flex-1 text-left">
+<div class="font-title-md text-title-md">Email Address</div>
+<div class="font-body-md text-body-md text-on-surface-variant">alex.j@example.com</div>
+</div>
+<span class="material-symbols-outlined text-outline">chevron_right</span>
+</button>
+<button class="w-full flex items-center gap-md p-md hover:bg-surface-container-low transition-all border-b border-outline-variant/30 active:scale-[0.98] duration-100">
+<span class="material-symbols-outlined text-secondary" data-icon="lock">lock</span>
+<div class="flex-1 text-left">
+<div class="font-title-md text-title-md">Password &amp; Security</div>
+<div class="font-body-md text-body-md text-on-surface-variant">Last changed 3 months ago</div>
+</div>
+<span class="material-symbols-outlined text-outline">chevron_right</span>
+</button>
+<button class="w-full flex items-center gap-md p-md hover:bg-surface-container-low transition-all active:scale-[0.98] duration-100">
+<span class="material-symbols-outlined text-secondary" data-icon="shield">shield</span>
+<div class="flex-1 text-left">
+<div class="font-title-md text-title-md">Privacy &amp; Data</div>
+<div class="font-body-md text-body-md text-on-surface-variant">Manage what you share</div>
+</div>
+<span class="material-symbols-outlined text-outline">chevron_right</span>
+</button>
+</div>
+</section>
+<!-- Notifications Section -->
+<section>
+<h2 class="font-label-lg text-label-lg text-primary mb-sm px-1">Notifications</h2>
+<div class="bg-surface-container-lowest rounded-xl border border-[#E2E8F0] settings-card-shadow overflow-hidden">
+<div class="w-full flex items-center gap-md p-md border-b border-outline-variant/30">
+<span class="material-symbols-outlined text-secondary" data-icon="notifications_active">notifications_active</span>
+<div class="flex-1 text-left">
+<div class="font-title-md text-title-md">Push Notifications</div>
+<div class="font-body-md text-body-md text-on-surface-variant">Enabled for health alerts</div>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-outline-variant rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+<div class="w-full flex items-center gap-md p-md">
+<span class="material-symbols-outlined text-secondary" data-icon="alternate_email">alternate_email</span>
+<div class="flex-1 text-left">
+<div class="font-title-md text-title-md">Email Reports</div>
+<div class="font-body-md text-body-md text-on-surface-variant">Weekly health summary</div>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-outline-variant rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+</div>
+</section>
+<!-- Preferences Section -->
+<section>
+<h2 class="font-label-lg text-label-lg text-primary mb-sm px-1">Preferences</h2>
+<div class="bg-surface-container-lowest rounded-xl border border-[#E2E8F0] settings-card-shadow overflow-hidden">
+<button class="w-full flex items-center gap-md p-md hover:bg-surface-container-low transition-all border-b border-outline-variant/30 active:scale-[0.98] duration-100">
+<span class="material-symbols-outlined text-secondary" data-icon="straighten">straighten</span>
+<div class="flex-1 text-left">
+<div class="font-title-md text-title-md">Measurement Units</div>
+<div class="font-body-md text-body-md text-on-surface-variant">Metric (kg, cm, km)</div>
+</div>
+<span class="material-symbols-outlined text-outline">chevron_right</span>
+</button>
+<button class="w-full flex items-center gap-md p-md hover:bg-surface-container-low transition-all border-b border-outline-variant/30 active:scale-[0.98] duration-100">
+<span class="material-symbols-outlined text-secondary" data-icon="dark_mode">dark_mode</span>
+<div class="flex-1 text-left">
+<div class="font-title-md text-title-md">Theme</div>
+<div class="font-body-md text-body-md text-on-surface-variant">System default</div>
+</div>
+<span class="material-symbols-outlined text-outline">chevron_right</span>
+</button>
+<button class="w-full flex items-center gap-md p-md hover:bg-surface-container-low transition-all active:scale-[0.98] duration-100">
+<span class="material-symbols-outlined text-secondary" data-icon="translate">translate</span>
+<div class="flex-1 text-left">
+<div class="font-title-md text-title-md">Language</div>
+<div class="font-body-md text-body-md text-on-surface-variant">English (US)</div>
+</div>
+<span class="material-symbols-outlined text-outline">chevron_right</span>
+</button>
+</div>
+</section>
+<!-- Support Section -->
+<section>
+<h2 class="font-label-lg text-label-lg text-primary mb-sm px-1">Support</h2>
+<div class="bg-surface-container-lowest rounded-xl border border-[#E2E8F0] settings-card-shadow overflow-hidden">
+<button class="w-full flex items-center gap-md p-md hover:bg-surface-container-low transition-all border-b border-outline-variant/30 active:scale-[0.98] duration-100">
+<span class="material-symbols-outlined text-secondary" data-icon="help">help</span>
+<div class="flex-1 text-left">
+<div class="font-title-md text-title-md">Help Center</div>
+<div class="font-body-md text-body-md text-on-surface-variant">FAQs and troubleshooting</div>
+</div>
+<span class="material-symbols-outlined text-outline">open_in_new</span>
+</button>
+<button class="w-full flex items-center gap-md p-md hover:bg-surface-container-low transition-all active:scale-[0.98] duration-100">
+<span class="material-symbols-outlined text-secondary" data-icon="description">description</span>
+<div class="flex-1 text-left">
+<div class="font-title-md text-title-md">Terms of Service</div>
+<div class="font-body-md text-body-md text-on-surface-variant">Version 2.4.1</div>
+</div>
+<span class="material-symbols-outlined text-outline">chevron_right</span>
+</button>
+</div>
+</section>
+<!-- Logout Action -->
+<button class="w-full bg-error-container text-on-error-container font-label-lg py-4 rounded-xl flex items-center justify-center gap-2 mt-8 active:scale-95 duration-100">
+<span class="material-symbols-outlined">logout</span>
+            Sign Out
+        </button>
+<div class="text-center pb-8">
+<p class="font-label-sm text-label-sm text-on-surface-variant">SmartLife v4.2.0 • Made with Vitality</p>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 w-full z-50 flex justify-around items-center px-4 py-3 pb-safe bg-surface-container shadow-lg rounded-t-xl">
+<button class="flex flex-col items-center justify-center text-on-surface-variant px-5 py-1 hover:bg-surface-container-high transition-all active:scale-90 duration-200">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+<span class="font-label-sm text-label-sm">Home</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant px-5 py-1 hover:bg-surface-container-high transition-all active:scale-90 duration-200">
+<span class="material-symbols-outlined" data-icon="exercise">exercise</span>
+<span class="font-label-sm text-label-sm">Activity</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant px-5 py-1 hover:bg-surface-container-high transition-all active:scale-90 duration-200">
+<span class="material-symbols-outlined" data-icon="chat">chat</span>
+<span class="font-label-sm text-label-sm">Coach</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant px-5 py-1 hover:bg-surface-container-high transition-all active:scale-90 duration-200">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="font-label-sm text-label-sm">Profile</span>
+</button>
+<button class="flex flex-col items-center justify-center bg-secondary-container text-on-secondary-container rounded-xl px-5 py-1 transition-all active:scale-90 duration-200">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-label-sm text-label-sm">Settings</span>
+</button>
+</nav>
+</body></html>

@@ -65,7 +65,7 @@
         android:layout_margin="16dp"
         android:layout_gravity="bottom|end"
         android:text="Planifier"
-        app:icon="@android:drawable/ic_input_add"
+        app:icon="@drawable/ic_round_add_24"
         app:backgroundTint="?attr/colorPrimary"
         app:tint="?attr/colorOnPrimary" />
 

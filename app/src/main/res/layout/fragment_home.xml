@@ -44,7 +44,7 @@
                             android:id="@+id/vStatusIndicator"
                             android:layout_width="10dp"
                             android:layout_height="10dp"
-                            android:background="@android:drawable/presence_invisible"
+                            android:background="@drawable/ic_round_info_24"
                             android:alpha="0.3" />
                         <TextView
                             android:id="@+id/tvDate"
@@ -89,7 +89,7 @@
                     <com.google.android.material.floatingactionbutton.FloatingActionButton
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:src="@android:drawable/ic_menu_directions"
+                        android:src="@drawable/ic_round_directions_run_24"
                         app:fabSize="mini"
                         app:elevation="2dp"
                         android:clickable="false"
@@ -110,7 +110,7 @@
                     <com.google.android.material.floatingactionbutton.FloatingActionButton
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:src="@android:drawable/ic_menu_today"
+                        android:src="@drawable/ic_round_calendar_today_24"
                         app:fabSize="mini"
                         app:elevation="2dp"
                         android:clickable="false"
@@ -131,7 +131,7 @@
                     <com.google.android.material.floatingactionbutton.FloatingActionButton
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:src="@android:drawable/ic_btn_speak_now"
+                        android:src="@drawable/ic_round_mic_24"
                         app:fabSize="mini"
                         app:elevation="2dp"
                         android:clickable="false"
@@ -325,7 +325,7 @@
                         android:id="@+id/ivLastActIcon"
                         android:layout_width="36dp"
                         android:layout_height="36dp"
-                        android:src="@android:drawable/ic_menu_directions"
+                        android:src="@drawable/ic_round_directions_run_24"
                         app:tint="?attr/colorPrimary"
                         android:contentDescription="Dernière activité" />
                     <LinearLayout

@@ -175,7 +175,7 @@
         android:layout_margin="24dp"
         android:layout_gravity="bottom|center_horizontal"
         android:text="Parler au Coach"
-        app:icon="@android:drawable/ic_btn_speak_now"
+        app:icon="@drawable/ic_round_mic_24"
         app:backgroundTint="?attr/colorPrimary"
         app:tint="?attr/colorOnPrimary" />
 

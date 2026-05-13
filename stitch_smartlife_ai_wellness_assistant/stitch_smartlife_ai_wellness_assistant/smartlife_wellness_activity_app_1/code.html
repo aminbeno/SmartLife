@@ -1,0 +1,322 @@
+<!DOCTYPE html><html class="light" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-secondary-fixed-variant": "#2f2ebe",
+                    "secondary": "#4648d4",
+                    "on-primary-container": "#00574d",
+                    "surface-container-high": "#dce9ff",
+                    "tertiary-fixed-dim": "#ffb95f",
+                    "on-secondary": "#ffffff",
+                    "surface-container": "#e5eeff",
+                    "inverse-primary": "#3cddc7",
+                    "error-container": "#ffdad6",
+                    "inverse-on-surface": "#eaf1ff",
+                    "outline": "#6b7a76",
+                    "on-background": "#0b1c30",
+                    "on-primary-fixed-variant": "#005047",
+                    "on-primary-fixed": "#00201c",
+                    "on-tertiary-fixed": "#2a1700",
+                    "primary-fixed": "#62fae3",
+                    "secondary-container": "#6063ee",
+                    "tertiary-container": "#ffad3a",
+                    "on-primary": "#ffffff",
+                    "on-surface": "#0b1c30",
+                    "on-tertiary-container": "#6d4400",
+                    "outline-variant": "#bacac5",
+                    "on-secondary-container": "#fffbff",
+                    "surface-tint": "#006b5f",
+                    "secondary-fixed-dim": "#c0c1ff",
+                    "surface-variant": "#d3e4fe",
+                    "surface-bright": "#f8f9ff",
+                    "secondary-fixed": "#e1e0ff",
+                    "background": "#f8f9ff",
+                    "inverse-surface": "#213145",
+                    "on-secondary-fixed": "#07006c",
+                    "error": "#ba1a1a",
+                    "on-tertiary-fixed-variant": "#653e00",
+                    "surface-container-lowest": "#ffffff",
+                    "on-error-container": "#93000a",
+                    "on-tertiary": "#ffffff",
+                    "tertiary": "#855300",
+                    "surface-container-highest": "#d3e4fe",
+                    "surface": "#f8f9ff",
+                    "primary-container": "#2dd4bf",
+                    "on-error": "#ffffff",
+                    "tertiary-fixed": "#ffddb8",
+                    "on-surface-variant": "#3c4a46",
+                    "primary-fixed-dim": "#3cddc7",
+                    "primary": "#006b5f",
+                    "surface-container-low": "#eff4ff",
+                    "surface-dim": "#cbdbf5"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "md": "16px",
+                    "sm": "8px",
+                    "lg": "24px",
+                    "margin-mobile": "16px",
+                    "xl": "32px",
+                    "baseline": "4px",
+                    "xs": "4px",
+                    "gutter-mobile": "12px"
+            },
+            "fontFamily": {
+                    "body-md": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "label-lg": ["Inter"],
+                    "title-md": ["Inter"],
+                    "display-lg": ["Inter"],
+                    "label-sm": ["Inter"],
+                    "title-lg": ["Inter"],
+                    "headline-sm": ["Inter"],
+                    "headline-lg": ["Inter"]
+            },
+            "fontSize": {
+                    "body-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.25px", "fontWeight": "400"}],
+                    "body-lg": ["16px", {"lineHeight": "24px", "letterSpacing": "0.5px", "fontWeight": "400"}],
+                    "label-lg": ["14px", {"lineHeight": "20px", "letterSpacing": "0.1px", "fontWeight": "500"}],
+                    "title-md": ["16px", {"lineHeight": "24px", "letterSpacing": "0.15px", "fontWeight": "500"}],
+                    "display-lg": ["57px", {"lineHeight": "64px", "letterSpacing": "-0.25px", "fontWeight": "400"}],
+                    "label-sm": ["11px", {"lineHeight": "16px", "letterSpacing": "0.5px", "fontWeight": "500"}],
+                    "title-lg": ["22px", {"lineHeight": "28px", "letterSpacing": "0px", "fontWeight": "500"}],
+                    "headline-sm": ["24px", {"lineHeight": "32px", "letterSpacing": "0px", "fontWeight": "600"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "0px", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .progress-ring-circle {
+            transition: stroke-dashoffset 0.35s;
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  <style data-stitch-cursor=""></style><style data-stitch-scroll-lock=""></style></head>
+<body class="bg-background text-on-surface font-body-md min-h-screen pb-32">
+<!-- Top App Bar -->
+<header class="flex justify-between items-center px-margin-mobile h-16 w-full z-50 fixed top-0 bg-surface/80 backdrop-blur-md">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full overflow-hidden border-2 border-primary-container">
+<img alt="User profile photo" class="w-full h-full object-cover" data-alt="A professional and friendly headshot of a young adult with a warm smile, set against a clean, soft-focus natural outdoor background. The lighting is bright and airy, reflecting a modern and healthy lifestyle aesthetic. The image uses soft tonal transitions that complement a high-end wellness application interface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCJFjquOKQ1QJiAVGRsRCy-vU5ddmwdr_Ip69pjLCaxm6_k1Kw3V1-OfHe6KWfG2BGB70fHebRHMVecUe_hWCUczBSUNYXcBL2OPhntqfQ-dr6qQORcU_mYpX6tFasLwnPbv5baVwNeaNvYc6-M6o7d8-c54aVhxcgfdvkwwionfAvOLAj5Pf91-fWsIpIx87cTR3qyLvAkSrfmHByC4uEiFg_SKNaO6D4DwL4wczqwDGgZFbsvNZYGPHnib_v6f-hu_A7jN1Fffi9B">
+</div>
+<h1 class="font-headline-sm text-headline-sm font-semibold text-primary">SmartLife</h1>
+</div>
+<button class="material-symbols-outlined text-on-surface-variant p-2 hover:bg-surface-container-low transition-colors active:scale-95 duration-100">
+            notifications
+        </button>
+</header>
+<!-- Main Content Canvas -->
+<main class="pt-20 px-margin-mobile max-w-5xl mx-auto space-y-lg">
+<!-- Bento Grid: Hero Indicators -->
+<section class="grid grid-cols-1 md:grid-cols-3 gap-md">
+<!-- Well-being Score Card -->
+<div class="bg-surface-container-lowest rounded-xl p-lg shadow-sm border border-outline-variant/30 flex flex-col items-center justify-center text-center">
+<p class="font-title-md text-title-md text-on-surface-variant mb-md">Well-being Score</p>
+<div class="relative flex items-center justify-center w-32 h-32">
+<svg class="w-full h-full">
+<circle class="text-surface-container stroke-current" cx="64" cy="64" fill="transparent" r="56" stroke-width="8"></circle>
+<circle class="text-primary stroke-current progress-ring-circle" cx="64" cy="64" fill="transparent" r="56" stroke-dasharray="351.85" stroke-dashoffset="87.96" stroke-linecap="round" stroke-width="8"></circle>
+</svg>
+<div class="absolute inset-0 flex flex-col items-center justify-center">
+<span class="font-headline-lg text-headline-lg text-primary">75</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Optimal</span>
+</div>
+</div>
+<p class="mt-md font-body-md text-body-md text-on-surface-variant">+5% from yesterday</p>
+</div>
+<!-- Daily Goals Card -->
+<div class="md:col-span-2 bg-primary-container/10 rounded-xl p-lg border border-primary-container/20 grid grid-cols-2 gap-md items-center">
+<div class="space-y-sm">
+<h2 class="font-title-lg text-title-lg text-on-primary-container">Daily Goal</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">You've completed 65% of your active targets for today.</p>
+<div class="flex gap-md pt-sm">
+<div class="flex items-center gap-xs">
+<span class="material-symbols-outlined text-primary text-[20px]">footprint</span>
+<span class="font-label-lg text-label-lg">8.2k</span>
+</div>
+<div class="flex items-center gap-xs">
+<span class="material-symbols-outlined text-tertiary text-[20px]">local_fire_department</span>
+<span class="font-label-lg text-label-lg">450 kcal</span>
+</div>
+</div>
+</div>
+<div class="flex justify-end">
+<div class="relative w-28 h-28">
+<svg class="w-full h-full">
+<circle class="text-primary-container/20 stroke-current" cx="56" cy="56" fill="transparent" r="48" stroke-width="12"></circle>
+<circle class="text-primary stroke-current progress-ring-circle" cx="56" cy="56" fill="transparent" r="48" stroke-dasharray="301.59" stroke-dashoffset="105.55" stroke-linecap="round" stroke-width="12"></circle>
+</svg>
+<div class="absolute inset-0 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-headline-sm" data-weight="fill" style="font-variation-settings: 'FILL' 1;">stars</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Activity Chart & AI Card Layout -->
+<section class="grid grid-cols-1 lg:grid-cols-2 gap-md">
+<!-- Weekly Activity Chart -->
+<div class="bg-surface-container-lowest rounded-xl p-lg border border-outline-variant/30">
+<div class="flex justify-between items-center mb-lg">
+<h3 class="font-title-md text-title-md">Weekly Activity</h3>
+<button class="text-primary font-label-lg hover:underline">Details</button>
+</div>
+<div class="flex items-end justify-between h-48 px-2">
+<div class="flex flex-col items-center gap-sm w-full">
+<div class="w-8 bg-secondary-container/40 rounded-t-lg h-[40%] transition-all hover:bg-secondary-container"></div>
+<span class="font-label-sm text-label-sm text-outline">M</span>
+</div>
+<div class="flex flex-col items-center gap-sm w-full">
+<div class="w-8 bg-secondary-container/40 rounded-t-lg h-[65%] transition-all hover:bg-secondary-container"></div>
+<span class="font-label-sm text-label-sm text-outline">T</span>
+</div>
+<div class="flex flex-col items-center gap-sm w-full">
+<div class="w-8 bg-secondary-container rounded-t-lg h-[85%] transition-all"></div>
+<span class="font-label-sm text-label-sm text-on-surface font-semibold">W</span>
+</div>
+<div class="flex flex-col items-center gap-sm w-full">
+<div class="w-8 bg-secondary-container/40 rounded-t-lg h-[30%] transition-all hover:bg-secondary-container"></div>
+<span class="font-label-sm text-label-sm text-outline">T</span>
+</div>
+<div class="flex flex-col items-center gap-sm w-full">
+<div class="w-8 bg-secondary-container/40 rounded-t-lg h-[55%] transition-all hover:bg-secondary-container"></div>
+<span class="font-label-sm text-label-sm text-outline">F</span>
+</div>
+<div class="flex flex-col items-center gap-sm w-full">
+<div class="w-8 bg-secondary-container/40 rounded-t-lg h-[90%] transition-all hover:bg-secondary-container"></div>
+<span class="font-label-sm text-label-sm text-outline">S</span>
+</div>
+<div class="flex flex-col items-center gap-sm w-full">
+<div class="w-8 bg-secondary-container/40 rounded-t-lg h-[45%] transition-all hover:bg-secondary-container"></div>
+<span class="font-label-sm text-label-sm text-outline">S</span>
+</div>
+</div>
+</div>
+<!-- Prominent AI Advice Card -->
+<div class="bg-secondary-container text-on-secondary-container rounded-xl p-lg relative overflow-hidden flex flex-col justify-between">
+<div class="relative z-10">
+<div class="flex items-center gap-sm mb-md">
+<span class="material-symbols-outlined">auto_awesome</span>
+<h3 class="font-title-md text-title-md">AI Advice</h3>
+</div>
+<p class="font-body-lg text-body-lg leading-relaxed mb-lg">
+                        "Your heart rate recovery has improved by 12% after evening walks. Try a 20-minute light stroll today at 7:00 PM to maximize sleep quality."
+                    </p>
+</div>
+<div class="relative z-10 flex gap-sm">
+<button class="bg-surface-container-lowest text-secondary px-md py-sm rounded-lg font-label-lg hover:bg-surface-bright transition-colors active:scale-95">Set Reminder</button>
+<button class="bg-secondary/20 text-on-secondary-container px-md py-sm rounded-lg font-label-lg hover:bg-secondary/30 transition-colors">Dismiss</button>
+</div>
+<!-- Decorative element -->
+<div class="absolute -right-8 -bottom-8 w-32 h-32 bg-on-secondary-container/5 rounded-full blur-2xl"></div>
+<div class="absolute -left-4 -top-4 w-24 h-24 bg-on-secondary-container/10 rounded-full blur-xl"></div>
+</div>
+</section>
+<!-- Quick Actions -->
+<section class="space-y-md">
+<h3 class="font-title-md text-title-md">Quick Actions</h3>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-md">
+<button class="flex items-center gap-md p-md bg-surface-container-high rounded-xl hover:bg-surface-container-highest transition-all active:scale-95 group">
+<div class="w-12 h-12 rounded-lg bg-primary flex items-center justify-center text-on-primary">
+<span class="material-symbols-outlined">play_arrow</span>
+</div>
+<div class="text-left">
+<p class="font-title-md text-title-md">Start Tracking</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Begin a new activity</p>
+</div>
+</button>
+<button class="flex items-center gap-md p-md bg-surface-container-high rounded-xl hover:bg-surface-container-highest transition-all active:scale-95 group">
+<div class="w-12 h-12 rounded-lg bg-secondary flex items-center justify-center text-on-secondary">
+<span class="material-symbols-outlined">calendar_today</span>
+</div>
+<div class="text-left">
+<p class="font-title-md text-title-md">View Schedule</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Check your routine</p>
+</div>
+</button>
+<button class="flex items-center gap-md p-md bg-surface-container-high rounded-xl hover:bg-surface-container-highest transition-all active:scale-95 group">
+<div class="w-12 h-12 rounded-lg bg-tertiary flex items-center justify-center text-on-tertiary">
+<span class="material-symbols-outlined">chat</span>
+</div>
+<div class="text-left">
+<p class="font-title-md text-title-md">Talk to Coach</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Instant AI support</p>
+</div>
+</button>
+</div>
+</section>
+<!-- Content Placeholder for scrolling -->
+<section class="bg-surface-container-lowest rounded-xl p-lg border border-outline-variant/30 flex flex-col gap-md">
+<div class="flex items-center gap-md">
+<div class="w-12 h-12 bg-surface-container rounded-full animate-pulse"></div>
+<div class="flex-1 space-y-xs">
+<div class="h-4 bg-surface-container rounded w-1/3"></div>
+<div class="h-3 bg-surface-container rounded w-1/4"></div>
+</div>
+</div>
+<div class="h-40 bg-surface-container/50 rounded-lg relative overflow-hidden">
+<img alt="Fitness background" class="w-full h-full object-cover opacity-30" data-alt="A high-key, vibrant fitness photograph showcasing a modern, light-filled gym with sleek equipment. Soft morning sunlight streams through large windows, creating a bright and energizing atmosphere. The scene is dominated by fresh mint and indigo accents, maintaining the brand's aesthetic of vitality and precision." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD4dbFcWK_B6EcJiDOgbdS32DC0MjuhXwDhry_7tEn2mx6NbSFpg3GysmIzB1uZh9PReDXpPvQPXck2YqlVz25FZrRtlRXG3zK32qNOeou5C49HRCGzvV0Wi-AzmLflp8Q1k5mthWgwVGP-J0K32zZHxdk_631bWINgLl9qJy9-nuL3vSXETnXNG1WWCZwqufeD1lh2dNqJ5UlXNsKs_pjJTquseaDnSNO0NBvaFFU038Qyh_sClrxyQHCRMmDiad2QX_UiOWYW2n-K">
+<div class="absolute inset-0 flex items-center justify-center">
+<span class="font-label-lg text-label-lg text-outline">More insights loading...</span>
+</div>
+</div>
+</section>
+</main>
+<!-- Bottom Navigation Bar -->
+<nav class="fixed bottom-0 w-full z-50 flex justify-around items-center px-4 py-3 pb-safe bg-surface-container shadow-lg rounded-t-xl border-t border-outline-variant/30">
+<!-- Home Active -->
+<a class="flex flex-col items-center justify-center bg-secondary-container text-on-secondary-container rounded-xl px-5 py-1 transition-all active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined" data-weight="fill" style="font-variation-settings: 'FILL' 1;">home</span>
+<span class="font-label-sm text-label-sm">Home</span>
+</a>
+<!-- Activity Inactive -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-5 py-1 hover:bg-surface-container-high transition-all active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined">exercise</span>
+<span class="font-label-sm text-label-sm">Activity</span>
+</a>
+<!-- Coach Inactive -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-5 py-1 hover:bg-surface-container-high transition-all active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined">chat</span>
+<span class="font-label-sm text-label-sm">Coach</span>
+</a>
+<!-- Profile Inactive -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-5 py-1 hover:bg-surface-container-high transition-all active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="font-label-sm text-label-sm">Profile</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-5 py-1 hover:bg-surface-container-high transition-all active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label-sm text-label-sm">Settings</span>
+</a></nav>
+<!-- Floating Action Button -->
+<button class="fixed bottom-24 right-margin-mobile w-14 h-14 bg-primary text-on-primary rounded-2xl shadow-xl flex items-center justify-center hover:bg-primary/90 active:scale-90 transition-all z-40">
+<span class="material-symbols-outlined text-[28px]">add</span>
+</button>
+
+
+</body></html>
