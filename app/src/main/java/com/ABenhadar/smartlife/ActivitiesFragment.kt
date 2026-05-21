@@ -30,6 +30,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.ABenhadar.smartlife.api.RetrofitClient
+import com.ABenhadar.smartlife.models.ActivityData
 import com.ABenhadar.smartlife.models.NamedLocation as SmartLifeNamedLocation
 import com.ABenhadar.smartlife.service.GpsTrackingService
 import com.google.android.material.button.MaterialButton
@@ -158,7 +159,6 @@ class ActivitiesFragment : Fragment(), MapEventsReceiver {
             lifecycleScope.launch(Dispatchers.Main) {
                 map.controller.animateTo(locationOverlay.myLocation)
                 map.controller.setZoom(17.5)
-                // Au premier fix GPS, on cherche la prochaine activité et on trace le chemin
                 loadNextActivityAndRoute()
             }
         }
@@ -166,7 +166,6 @@ class ActivitiesFragment : Fragment(), MapEventsReceiver {
         map.overlays.add(locationOverlay)
         map.overlays.add(0, MapEventsOverlay(this))
         
-        // Par défaut, centrer sur le Maroc (Casablanca) au lieu de Paris
         map.controller.setCenter(GeoPoint(33.5731, -7.5898))
     }
 
@@ -186,7 +185,6 @@ class ActivitiesFragment : Fragment(), MapEventsReceiver {
             val todayItems = schedule.days.find { it.day_of_week.equals(currentDayFr, ignoreCase = true) }?.items
             val nextItem = todayItems?.filter { it.time > currentTime }?.minByOrNull { it.time }
 
-            // Vérification de sécurité : on ignore les coordonnées (0,0) ou manifestement erronées
             if (nextItem?.lat != null && nextItem.lng != null && nextItem.lat != 0.0 && nextItem.lng != 0.0) {
                 drawRouteTo(GeoPoint(nextItem.lat, nextItem.lng))
             }
@@ -199,7 +197,6 @@ class ActivitiesFragment : Fragment(), MapEventsReceiver {
             return
         }
 
-        // Sécurité : Si la destination est à plus de 5000km, c'est probablement une erreur (USA/Océan)
         val distanceToDest = start.distanceToAsDouble(destination)
         if (distanceToDest > 5000000) {
             Log.w("Routing", "Destination trop lointaine ($distanceToDest m), probablement une erreur de localisation.")
@@ -336,7 +333,6 @@ class ActivitiesFragment : Fragment(), MapEventsReceiver {
         searchJob?.cancel()
         searchJob = lifecycleScope.launch {
             delay(600) 
-            // Amélioration : Utiliser la localisation actuelle pour filtrer les résultats (Maroc)
             val geocoder = Geocoder(requireContext(), Locale.getDefault())
             val results = withContext(Dispatchers.IO) {
                 try { 
@@ -344,7 +340,6 @@ class ActivitiesFragment : Fragment(), MapEventsReceiver {
                         null
                     } else {
                         @Suppress("DEPRECATION")
-                        // Essayer de limiter la recherche à la zone du Maroc si possible
                         geocoder.getFromLocationName(query, 5)
                     }
                 } catch (e: Exception) { null }
@@ -507,7 +502,8 @@ class ActivitiesFragment : Fragment(), MapEventsReceiver {
     private suspend fun loadActivityHistory() {
         val userId = auth.currentUser?.uid ?: return
         try {
-            val activities = apiService.getActivities(userId)
+            val response = apiService.getActivities(userId)
+            val activities: List<ActivityData> = response.data ?: emptyList()
             if (activities.isNotEmpty()) {
                 withContext(Dispatchers.Main) {
                     val line = Polyline().apply {

@@ -1,25 +1,31 @@
 package com.ABenhadar.smartlife
 
 import android.content.Intent
-import android.content.res.ColorStateList
+import android.graphics.Typeface
+import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
+import android.util.Log
+import android.util.TypedValue
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AnimationUtils
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.ABenhadar.smartlife.api.RetrofitClient
-import com.ABenhadar.smartlife.models.FrequentPlace
 import com.ABenhadar.smartlife.models.ScheduleItem
+import com.ABenhadar.smartlife.models.weeklySchedule
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.google.android.material.chip.Chip
-import com.google.android.material.chip.ChipGroup
+import com.google.android.material.imageview.ShapeableImageView
 import com.google.android.material.progressindicator.CircularProgressIndicator
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.Dispatchers
@@ -46,12 +52,12 @@ class HomeFragment : Fragment() {
     private lateinit var pbActivityGoal: CircularProgressIndicator
     private lateinit var tvHabitInsight: TextView
     private lateinit var llTodaySchedule: LinearLayout
-    private lateinit var cgFrequentPlaces: ChipGroup
     private lateinit var llWeeklyChart: LinearLayout
     private lateinit var cvLastActivity: View
     private lateinit var tvLastActTitle: TextView
     private lateinit var tvLastActDetails: TextView
     private lateinit var ivLastActIcon: ImageView
+    private lateinit var ivUserAvatar: ShapeableImageView
 
     private val DAILY_GOAL_MINUTES = 60
 
@@ -62,7 +68,7 @@ class HomeFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_home, container, false)
         auth = FirebaseAuth.getInstance()
 
-        // Initialize Views
+        // Initialisation des vues
         swipeRefresh = view.findViewById(R.id.swipeRefresh)
         tvGreeting = view.findViewById(R.id.tvGreeting)
         tvDate = view.findViewById(R.id.tvDate)
@@ -74,16 +80,29 @@ class HomeFragment : Fragment() {
         pbActivityGoal = view.findViewById(R.id.pbActivityGoal)
         tvHabitInsight = view.findViewById(R.id.tvHabitInsight)
         llTodaySchedule = view.findViewById(R.id.llTodaySchedule)
-        cgFrequentPlaces = view.findViewById(R.id.cgFrequentPlaces)
         llWeeklyChart = view.findViewById(R.id.llWeeklyChart)
         cvLastActivity = view.findViewById(R.id.cvLastActivity)
         tvLastActTitle = view.findViewById(R.id.tvLastActTitle)
         tvLastActDetails = view.findViewById(R.id.tvLastActDetails)
         ivLastActIcon = view.findViewById(R.id.ivLastActIcon)
+        ivUserAvatar = view.findViewById(R.id.ivUserAvatar)
 
         setupQuickActions(view)
         setupSwipeRefresh()
-        loadDashboardData()
+
+        ivUserAvatar.setOnClickListener {
+            startActivity(Intent(requireContext(), ProfileActivity::class.java))
+        }
+
+        cvLastActivity.setOnClickListener {
+            // On peut rediriger vers le planning complet
+            startActivity(Intent(requireContext(), ScheduleActivity::class.java))
+        }
+
+        swipeRefresh.post {
+            swipeRefresh.isRefreshing = true
+            loadDashboardData()
+        }
 
         return view
     }
@@ -107,118 +126,134 @@ class HomeFragment : Fragment() {
 
     private fun loadDashboardData() {
         val userId = auth.currentUser?.uid ?: return
-        
+
+        // Calcul de l'ID de la semaine (Lundi actuel)
         val cal = Calendar.getInstance(Locale.FRANCE)
         cal.set(Calendar.HOUR_OF_DAY, 0); cal.set(Calendar.MINUTE, 0); cal.set(Calendar.SECOND, 0)
         while (cal.get(Calendar.DAY_OF_WEEK) != Calendar.MONDAY) { cal.add(Calendar.DAY_OF_MONTH, -1) }
-        val weekId = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(cal.time)
+        val weekId = SimpleDateFormat("yyyy-MM-dd", Locale.US).format(cal.time)
 
         lifecycleScope.launch {
             try {
                 val healthJob = async(Dispatchers.IO) { try { apiService.checkHealth() } catch (e: Exception) { null } }
                 val userJob = async(Dispatchers.IO) { try { apiService.getUser(userId) } catch (e: Exception) { null } }
                 val insightsJob = async(Dispatchers.IO) { try { apiService.getAIInsights(userId) } catch (e: Exception) { null } }
-                val activitiesJob = async(Dispatchers.IO) { try { apiService.getActivities(userId) } catch (e: Exception) { emptyList() } }
                 val scheduleJob = async(Dispatchers.IO) { try { apiService.getWeeklySchedule(userId, weekId) } catch (e: Exception) { null } }
-                val habitsJob = async(Dispatchers.IO) { try { apiService.getHabits(userId) } catch (e: Exception) { null } }
 
                 val isOnline = healthJob.await() != null
                 val user = userJob.await()
                 val insights = insightsJob.await()
-                val activities = activitiesJob.await()
                 val schedule = scheduleJob.await()
-                val habits = habitsJob.await()
 
                 withContext(Dispatchers.Main) {
+                    if (!isAdded) return@withContext
                     swipeRefresh.isRefreshing = false
-                    
-                    // 1. Connection & Header
+
+                    val currentTime = SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date())
+                    val todayIso = SimpleDateFormat("yyyy-MM-dd", Locale.US).format(Date())
+
+                    // 1. Header & Greeting
                     vStatusIndicator.alpha = if (isOnline) 1.0f else 0.2f
                     val hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
                     val greetingBase = if (hour in 5..17) "Bonjour" else "Bonsoir"
-                    
-                    val currentTime = SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date())
-                    val currentDayFr = SimpleDateFormat("EEEE", Locale.FRENCH).format(Date()).replaceFirstChar { it.uppercase() }
-                    val nextTask = schedule?.days?.find { it.day_of_week.equals(currentDayFr, ignoreCase = true) }
-                        ?.items?.filter { it.time > currentTime }?.minByOrNull { it.time }
 
-                    tvGreeting.text = if (nextTask != null) 
+                    val todaySchedule = schedule?.days?.find { it.date == todayIso }
+                    val todayItems = todaySchedule?.items ?: emptyList()
+                    val nextTask = todayItems.filter { it.time > currentTime }.minByOrNull { it.time }
+
+                    tvGreeting.text = if (nextTask != null)
                         "$greetingBase, ${user?.firstName ?: "Ami"} ! Prêt pour ${nextTask.activity_type} ?"
                     else "$greetingBase, ${user?.firstName ?: "Ami"} !"
-                    
+
                     tvDate.text = SimpleDateFormat("EEEE d MMMM", Locale.FRENCH).format(Date()).replaceFirstChar { it.uppercase() }
 
-                    // 2. IA Insights & Wellness
+                    // 2. Avatar logic
+                    val profileImageUrl = user?.profileImageUrl
+                    if (!profileImageUrl.isNullOrEmpty()) {
+                        val fullUrl = if (profileImageUrl.startsWith("http")) profileImageUrl else RetrofitClient.BASE_URL + profileImageUrl
+                        Glide.with(this@HomeFragment).load(fullUrl).placeholder(R.mipmap.ic_logo).error(R.mipmap.ic_logo).circleCrop().diskCacheStrategy(DiskCacheStrategy.ALL).into(ivUserAvatar)
+                    } else { ivUserAvatar.setImageResource(R.mipmap.ic_logo) }
+
+                    // 3. IA Insights
                     tvMainRecommendation.text = insights?.recommendations?.firstOrNull() ?: getString(R.string.default_recommendation)
                     val hScore = insights?.healthScore ?: 0
                     pbHealthScore.setProgress(hScore, true)
                     tvHealthScore.text = "$hScore%"
-                    tvHabitInsight.text = insights?.habits?.firstOrNull() ?: "Analyse en cours..."
+                    tvHabitInsight.text = insights?.habits?.firstOrNull() ?: "Analyse de votre planning..."
 
-                    // 3. Stats & Chart
-                    val todayIso = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
-                    val todayActs = activities.filter { it.timestamp?.startsWith(todayIso) == true }
-                    val totalMin = todayActs.sumOf { it.duration }
-                    tvTotalDuration.text = "$totalMin min"
-                    pbActivityGoal.setProgress(((totalMin.toFloat() / DAILY_GOAL_MINUTES) * 100).toInt().coerceAtMost(100), true)
-                    
-                    updateWeeklyChart(activities)
+                    // 4. Statistiques du jour (Basées sur le planning passé aujourd'hui)
+                    val completedMin = todayItems.filter { it.time <= currentTime }.sumOf { it.duration.toDouble() }
+                    tvTotalDuration.text = "${completedMin.toInt()} min"
+                    val progress = ((completedMin.toFloat() / DAILY_GOAL_MINUTES) * 100).toInt().coerceAtMost(100)
+                    pbActivityGoal.setProgress(progress, true)
+                    pbActivityGoal.setIndicatorColor(ContextCompat.getColor(requireContext(), if (completedMin >= DAILY_GOAL_MINUTES) R.color.success_main else R.color.tertiary_color))
 
-                    // 4. Last Activity
-                    val lastAct = activities.maxByOrNull { it.timestamp ?: "" }
-                    if (lastAct != null) {
+                    updateWeeklyChartFromSchedule(schedule)
+
+                    // 5. Logique de la "Dernière Session" (Récupérée du planning)
+                    val lastSession = schedule?.days?.flatMap { day ->
+                        day.items.map { day.date to it }
+                    }?.filter { (date, item) ->
+                        date != null && "$date ${item.time}" <= "$todayIso $currentTime"
+                    }?.maxByOrNull { (date, item) -> "$date ${item.time}" }
+
+                    if (lastSession != null) {
+                        val (date, item) = lastSession
                         cvLastActivity.visibility = View.VISIBLE
-                        tvLastActTitle.text = lastAct.type.replaceFirstChar { it.uppercase() }
-                        tvLastActDetails.text = "${formatTimeAgo(lastAct.timestamp)} • ${lastAct.duration} min"
-                        ivLastActIcon.setImageResource(getActivityIcon(lastAct.type))
+                        tvLastActTitle.text = item.activity_type.replaceFirstChar { it.uppercase() }
+                        val timeLabel = if (date == todayIso) "Aujourd'hui à ${item.time}" else "$date à ${item.time}"
+                        tvLastActDetails.text = "$timeLabel • ${item.duration} min • ${item.location_name ?: "Lieu prévu"}"
+                        ivLastActIcon.setImageResource(getActivityIcon(item.activity_type))
                     } else {
                         cvLastActivity.visibility = View.GONE
                     }
 
-                    // 5. Planning & Habits
-                    updateScheduleUI(schedule?.days?.find { it.day_of_week.equals(currentDayFr, ignoreCase = true) }?.items ?: emptyList())
-                    updateHabitsUI(habits?.frequent_places ?: emptyList())
+                    // 6. Agenda (Prochaines tâches de la journée)
+                    val upcomingToday = todayItems.filter { it.time > currentTime }
+                    updateScheduleUI(upcomingToday)
                 }
             } catch (e: Exception) {
-                withContext(Dispatchers.Main) { swipeRefresh.isRefreshing = false }
+                withContext(Dispatchers.Main) {
+                    swipeRefresh.isRefreshing = false
+                    Log.e("HomeFragment", "Load error", e)
+                }
             }
         }
     }
 
-    private fun updateWeeklyChart(activities: List<com.ABenhadar.smartlife.models.ActivityData>) {
+    private fun updateWeeklyChartFromSchedule(schedule: weeklySchedule?) {
         llWeeklyChart.removeAllViews()
-        val calendar = Calendar.getInstance()
-        calendar.add(Calendar.DAY_OF_YEAR, -6)
-        val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-        val dayInitialFormat = SimpleDateFormat("EE", Locale.FRENCH)
+        val todayIso = SimpleDateFormat("yyyy-MM-dd", Locale.US).format(Date())
+        val days = schedule?.days ?: emptyList()
+        if (days.isEmpty()) return
 
-        for (i in 0..6) {
-            val dateStr = sdf.format(calendar.time)
-            val dayMin = activities.filter { it.timestamp?.startsWith(dateStr) == true }.sumOf { it.duration }
-            
+        val maxMinutes = days.maxOfOrNull { d -> d.items.sumOf { it.duration.toDouble() } }?.coerceAtLeast(DAILY_GOAL_MINUTES.toDouble()) ?: DAILY_GOAL_MINUTES.toDouble()
+
+        for (day in days) {
+            val dayTotal = day.items.sumOf { it.duration.toDouble() }
             val barContainer = LinearLayout(context).apply {
                 orientation = LinearLayout.VERTICAL
-                gravity = Gravity.BOTTOM
+                gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
                 layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT, 1f)
             }
-
+            val barHeightDp = ((dayTotal / maxMinutes) * 85.0).toFloat().coerceAtLeast(10f)
             val bar = View(context).apply {
-                val heightPx = (dayMin * 2).coerceAtMost(200) + 10
-                layoutParams = LinearLayout.LayoutParams(15, heightPx).apply { bottomMargin = 4 }
-                setBackgroundColor(ContextCompat.getColor(requireContext(), 
-                    if (dayMin >= DAILY_GOAL_MINUTES) R.color.primary_color else R.color.primary_light))
+                val widthPx = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 20f, resources.displayMetrics).toInt()
+                val heightPx = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, barHeightDp, resources.displayMetrics).toInt()
+                layoutParams = LinearLayout.LayoutParams(widthPx, heightPx).apply { bottomMargin = 15 }
+                background = GradientDrawable().apply {
+                    cornerRadius = 20f
+                    setColor(ContextCompat.getColor(requireContext(), if (dayTotal >= DAILY_GOAL_MINUTES) R.color.primary_color else R.color.primary_light))
+                }
             }
-
             val label = TextView(context).apply {
-                text = dayInitialFormat.format(calendar.time).first().toString()
+                text = day.day_of_week.first().toString().uppercase()
                 textSize = 10f
                 gravity = Gravity.CENTER
+                alpha = if (day.date == todayIso) 1f else 0.5f
+                if (day.date == todayIso) setTypeface(null, Typeface.BOLD)
             }
-
-            barContainer.addView(bar)
-            barContainer.addView(label)
-            llWeeklyChart.addView(barContainer)
-            calendar.add(Calendar.DAY_OF_YEAR, 1)
+            barContainer.addView(bar); barContainer.addView(label); llWeeklyChart.addView(barContainer)
         }
     }
 
@@ -226,48 +261,25 @@ class HomeFragment : Fragment() {
         llTodaySchedule.removeAllViews()
         val upcoming = items.sortedBy { it.time }.take(3)
         if (upcoming.isEmpty()) {
-            view?.findViewById<TextView>(R.id.tvNoSchedule)?.visibility = View.VISIBLE
+            llTodaySchedule.addView(TextView(context).apply { text = getString(R.string.free_day_msg); gravity = Gravity.CENTER; setPadding(0, 40, 0, 40); alpha = 0.5f })
         } else {
-            view?.findViewById<TextView>(R.id.tvNoSchedule)?.visibility = View.GONE
             upcoming.forEach { item ->
                 val itemView = LayoutInflater.from(context).inflate(R.layout.item_dashboard_activity, llTodaySchedule, false)
                 itemView.findViewById<TextView>(R.id.tvTime).text = item.time
                 itemView.findViewById<TextView>(R.id.tvTitle).text = item.activity_type
-                itemView.findViewById<TextView>(R.id.tvSubtitle).text = item.location_name ?: "Lieu à définir"
+                itemView.findViewById<TextView>(R.id.tvSubtitle).text = item.location_name ?: "Lieu à venir"
                 itemView.findViewById<TextView>(R.id.tvDuration).text = "${item.duration} min"
                 llTodaySchedule.addView(itemView)
             }
         }
     }
 
-    private fun updateHabitsUI(places: List<FrequentPlace>) {
-        cgFrequentPlaces.removeAllViews()
-        places.take(5).forEach { place ->
-            val chip = Chip(context)
-            chip.text = place.name
-            chip.chipBackgroundColor = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.primary_light))
-            chip.setTextColor(ContextCompat.getColor(requireContext(), R.color.primary_dark))
-            cgFrequentPlaces.addView(chip)
-        }
-    }
-
     private fun getActivityIcon(type: String): Int {
-        return when (type.lowercase()) {
-            "walking", "marche" -> android.R.drawable.ic_menu_directions
-            "running", "course" -> android.R.drawable.ic_menu_mylocation
-            else -> android.R.drawable.ic_menu_today
+        val t = type.lowercase()
+        return when {
+            t.contains("walk") || t.contains("marche") -> R.drawable.ic_round_directions_run_24
+            t.contains("run") || t.contains("course") -> R.drawable.ic_round_my_location_24
+            else -> R.drawable.ic_round_history_24
         }
-    }
-
-    private fun formatTimeAgo(timestamp: String?): String {
-        if (timestamp == null) return "Récemment"
-        return try {
-            val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
-            sdf.timeZone = TimeZone.getTimeZone("UTC")
-            val date = sdf.parse(timestamp) ?: return "Récemment"
-            val diff = Date().time - date.time
-            val hours = TimeUnit.MILLISECONDS.toHours(diff)
-            if (hours < 1) "À l'instant" else "Il y a ${hours}h"
-        } catch (e: Exception) { "Récemment" }
     }
 }

@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from routes.user_routes import router
 import os
 from dotenv import load_dotenv
@@ -14,8 +15,11 @@ app = FastAPI(
     version="1.0.0"
 )
 
+# Servir les fichiers statiques (images de profil)
+os.makedirs("static/profile_images", exist_ok=True)
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
 # Initialize Firebase Admin
-# Make sure to place your serviceAccountKey.json in the SmartLife directory
 service_account_path = os.path.join(os.path.dirname(__file__), "serviceAccountKey.json")
 if os.path.exists(service_account_path):
     cred = credentials.Certificate(service_account_path)

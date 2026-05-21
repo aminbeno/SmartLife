@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.view.animation.AnimationUtils
 import android.widget.*
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -23,11 +24,22 @@ class RegisterActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_register)
 
-        // On retarde l'initialisation pour éviter de figer le System UI au lancement
-        lifecycleScope.launch {
-            delay(500)
-            setupRegisterLogic()
-        }
+        // Initialisation de la logique
+        setupRegisterLogic()
+        
+        // Application des animations
+        applyAnimations()
+    }
+
+    private fun applyAnimations() {
+        val fadeIn = AnimationUtils.loadAnimation(this, R.anim.fade_in)
+        val fadeInUp = AnimationUtils.loadAnimation(this, R.anim.fade_in_up)
+
+        findViewById<ImageView>(R.id.ivRegisterLogo).startAnimation(fadeIn)
+        findViewById<TextView>(R.id.tvRegisterTitle).startAnimation(fadeInUp)
+        findViewById<TextView>(R.id.tvRegisterSubtitle).startAnimation(fadeInUp)
+        findViewById<com.google.android.material.card.MaterialCardView>(R.id.cvRegisterForm).startAnimation(fadeInUp)
+        findViewById<TextView>(R.id.tvLogin).startAnimation(fadeIn)
     }
 
     private fun setupRegisterLogic() {
@@ -50,7 +62,7 @@ class RegisterActivity : AppCompatActivity() {
 
         viewModel.successMessage.observe(this) { message ->
             if (message != null) {
-                Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Compte créé avec succès", Toast.LENGTH_SHORT).show()
                 viewModel.clearMessages()
                 updateFCMToken()
                 
@@ -66,7 +78,7 @@ class RegisterActivity : AppCompatActivity() {
 
         viewModel.errorMessage.observe(this) { error ->
             if (error != null) {
-                Toast.makeText(this, "Error: $error", Toast.LENGTH_LONG).show()
+                Toast.makeText(this, "Erreur : $error", Toast.LENGTH_LONG).show()
                 viewModel.clearMessages()
             }
         }
@@ -76,17 +88,14 @@ class RegisterActivity : AppCompatActivity() {
             val password = etPassword.text.toString()
             
             if (email.isEmpty() || password.isEmpty() || etConfirmPassword.text.isEmpty()) {
-                Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Veuillez remplir tous les champs", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
             if (password != etConfirmPassword.text.toString()) {
-                Toast.makeText(this, "Passwords do not match", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Les mots de passe ne correspondent pas", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
-
-            progressBar.visibility = View.VISIBLE
-            btnRegister.isEnabled = false
 
             auth?.createUserWithEmailAndPassword(email, password)
                 ?.addOnCompleteListener(this) { task ->
@@ -100,16 +109,13 @@ class RegisterActivity : AppCompatActivity() {
                             )
                         }
                     } else {
-                        progressBar.visibility = View.GONE
-                        btnRegister.isEnabled = true
-                        Toast.makeText(this, "Auth failed: ${task.exception?.message}", Toast.LENGTH_LONG).show()
+                        Toast.makeText(this, "Erreur : ${task.exception?.message}", Toast.LENGTH_LONG).show()
                     }
                 }
         }
 
         tvLogin.setOnClickListener {
-            startActivity(Intent(this, LoginActivity::class.java))
-            finish()
+            onBackPressed() // Retour au Login
         }
     }
 

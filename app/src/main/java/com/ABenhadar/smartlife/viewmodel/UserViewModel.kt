@@ -8,6 +8,7 @@ import com.ABenhadar.smartlife.models.UserData
 import com.ABenhadar.smartlife.models.UserResponse
 import com.ABenhadar.smartlife.repository.UserRepository
 import kotlinx.coroutines.launch
+import okhttp3.MultipartBody
 
 class UserViewModel : ViewModel() {
     private val repository = UserRepository()
@@ -26,6 +27,10 @@ class UserViewModel : ViewModel() {
 
     private val _apiStatus = MutableLiveData<String>("Not checked")
     val apiStatus: LiveData<String> = _apiStatus
+
+    fun setLoading(loading: Boolean) {
+        _isLoading.value = loading
+    }
 
     fun checkApiHealth() {
         viewModelScope.launch {
@@ -78,13 +83,12 @@ class UserViewModel : ViewModel() {
         }
     }
 
-    fun updateUser(uid: String, email: String, firstName: String, lastName: String, birthDate: String) {
+    fun updateUser(uid: String, userData: UserData) {
         viewModelScope.launch {
             _isLoading.value = true
             _errorMessage.value = null
 
-            val user = UserData(uid, email, firstName, lastName, birthDate)
-            repository.updateUser(uid, user)
+            repository.updateUser(uid, userData)
                 .onSuccess { message ->
                     _successMessage.value = "Profile updated successfully"
                     // Refresh current user
@@ -102,11 +106,27 @@ class UserViewModel : ViewModel() {
             repository.updateUserFCMToken(uid, token)
                 .onSuccess { _ ->
                     // Log success or do nothing, as it's a background update
-                    // _successMessage.postValue("FCM token updated")
                 }
                 .onFailure { error ->
                     // Log error, but don't necessarily show to user for a background task
-                    // _errorMessage.postValue("Failed to update FCM token: ${error.message}")
+                }
+        }
+    }
+
+    fun uploadProfileImage(uid: String, imagePart: MultipartBody.Part) {
+        viewModelScope.launch {
+            _isLoading.value = true
+            _errorMessage.value = null
+
+            repository.uploadProfileImage(uid, imagePart)
+                .onSuccess { imageUrl ->
+                    _successMessage.value = "Image uploaded successfully"
+                    // Refresh user to get the new image URL in the profile
+                    getUser(uid)
+                }
+                .onFailure { error ->
+                    _errorMessage.value = error.message ?: "Image upload failed"
+                    _isLoading.value = false
                 }
         }
     }

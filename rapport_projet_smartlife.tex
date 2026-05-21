@@ -1,0 +1,574 @@
+\documentclass[12pt,a4paper,oneside]{report}
+
+% ==========================================
+% PACKAGES ET CONFIGURATIONS ACADÉMIQUES
+% ==========================================
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+
+\usepackage{graphicx}
+\usepackage{geometry}
+\geometry{hmargin=2.5cm,vmargin=2.5cm}
+
+\usepackage{setspace}
+\onehalfspacing
+
+\usepackage{hyperref}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{acronym}
+\usepackage{float}
+\usepackage{tocloft}
+\usepackage{enumitem}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{caption}
+\usepackage{xcolor}
+\usepackage{tcolorbox}
+
+% ==========================================
+% COULEURS
+% ==========================================
+\definecolor{primaryColor}{HTML}{4F46E5}
+\definecolor{secondaryColor}{HTML}{06B6D4}
+
+% ==========================================
+% CONFIGURATION DES LIENS
+% ==========================================
+\hypersetup{
+    colorlinks=true,
+    linkcolor=black,
+    citecolor=primaryColor,
+    urlcolor=primaryColor
+}
+
+% ==========================================
+% STYLE DES TITRES
+% ==========================================
+\titleformat{\chapter}[display]
+{\normalfont\huge\bfseries\color{primaryColor}}
+{\chaptertitlename\ \thechapter}
+{20pt}
+{\Huge}
+
+\titlespacing*{\chapter}{0pt}{-20pt}{40pt}
+
+% ==========================================
+% EN-TÊTES ET PIEDS DE PAGE
+% ==========================================
+\pagestyle{fancy}
+\fancyhf{}
+
+\fancyhead[L]{\small \textit{SmartLife : Rapport de Projet Mobile}}
+\fancyhead[R]{\small Chapitre \thechapter}
+
+\fancyfoot[C]{\thepage}
+
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+
+% ==========================================
+% PROFONDEUR TOC
+% ==========================================
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+
+\begin{document}
+
+% ==========================================
+% PAGE DE GARDE
+% ==========================================
+    \begin{titlepage}
+        \centering
+
+        \vspace*{0.5cm}
+
+        {\Large \textbf{ÉCOLE SUPÉRIEURE DE TECHNOLOGIE}}\\[0.5cm]
+        {\large DÉPARTEMENT GÉNIE LOGICIEL}\\[1.5cm]
+
+        \begin{tcolorbox}[
+            colframe=primaryColor,
+            colback=white,
+            arc=10pt,
+            boxrule=2pt,
+            width=0.9\linewidth,
+            center
+        ]
+
+            \centering
+
+            \vspace{0.5cm}
+
+            {\Large \textbf{RAPPORT DE PROJET ACADÉMIQUE}}\\[0.3cm]
+
+            {\large \textbf{Module : Développement d’Applications Mobiles Android}}
+
+            \vspace{0.5cm}
+
+        \end{tcolorbox}
+
+        \vspace{1cm}
+
+        % Remplacer par votre image
+        \includegraphics[width=0.35\textwidth]{app/src/main/res/mipmap-xxxhdpi/ic_logo.png}\\[1cm]
+
+        \rule{\linewidth}{0.8mm}\\[0.4cm]
+
+        {\huge \bfseries SMARTLIFE\par}
+
+        {\Large \textbf{Conception d’un Assistant de Santé Connecté piloté par l’IA}}\\[0.4cm]
+
+        \rule{\linewidth}{0.8mm}\\[1.5cm]
+
+        \begin{minipage}{0.45\textwidth}
+            \begin{flushleft}
+                \large
+                \emph{Présenté par :}\\
+                \textbf{Amine Benhadar}
+            \end{flushleft}
+        \end{minipage}
+        \hfill
+        \begin{minipage}{0.45\textwidth}
+            \begin{flushright}
+                \large
+                \emph{Sous la direction de :}\\
+                \textbf{M. [Nom du Professeur]}
+            \end{flushright}
+        \end{minipage}
+
+        \vfill
+
+        {\large Année Universitaire : 2025 -- 2026}
+
+    \end{titlepage}
+
+% ==========================================
+% DÉDICACES
+% ==========================================
+    \chapter*{Dédicaces}
+    \addcontentsline{toc}{chapter}{Dédicaces}
+
+    \vspace*{2cm}
+
+    \begin{flushright}
+
+        \textit{À mes parents, pour leur soutien moral et financier inestimable...}\\
+
+        \textit{À mes enseignants, pour la transmission d’un savoir rigoureux...}\\
+
+        \textit{À l’innovation technologique, source de progrès humain.}
+
+    \end{flushright}
+
+% ==========================================
+% REMERCIEMENTS
+% ==========================================
+    \chapter*{Remerciements}
+    \addcontentsline{toc}{chapter}{Remerciements}
+
+    Je tiens à exprimer ma profonde gratitude à mon encadrant, M. [Nom], pour ses conseils avisés et sa disponibilité tout au long de ce projet de développement mobile.
+
+    Je remercie également l’équipe pédagogique pour la qualité de la formation dispensée.
+
+% ==========================================
+% RÉSUMÉ
+% ==========================================
+    \chapter*{Résumé}
+    \addcontentsline{toc}{chapter}{Résumé}
+
+    Le projet \textbf{SmartLife} s’inscrit dans l’évolution de la santé numérique visant à transformer le smartphone en un compagnon de bien-être intelligent.
+
+    L’application repose sur une architecture \textbf{MVVM}, utilise un \textit{Foreground Service} pour le suivi GPS et intègre un Coach IA basé sur Groq API.
+
+    \vspace{0.5cm}
+
+    \textbf{Mots-clés :} Android, IA, GPS, MVVM, REST API.
+
+% ==========================================
+% ABSTRACT
+% ==========================================
+    \chapter*{Abstract}
+    \addcontentsline{toc}{chapter}{Abstract}
+
+    The \textbf{SmartLife} project focuses on digital health technologies and AI-powered wellness assistance.
+
+    The application uses a robust MVVM architecture, GPS tracking services and AI integration through Groq API.
+
+    \vspace{0.5cm}
+
+    \textbf{Keywords :} Android, AI, GPS, MVVM, REST API.
+
+% ==========================================
+% ABRÉVIATIONS
+% ==========================================
+    \chapter*{Liste des Abréviations}
+    \addcontentsline{toc}{chapter}{Liste des Abréviations}
+
+    \begin{acronym}[OSMDroid]
+
+        \acro{API}{Application Programming Interface}
+        \acro{GPS}{Global Positioning System}
+        \acro{IA}{Intelligence Artificielle}
+        \acro{JSON}{JavaScript Object Notation}
+        \acro{LLM}{Large Language Model}
+        \acro{MVVM}{Model-View-ViewModel}
+        \acro{REST}{Representational State Transfer}
+
+    \end{acronym}
+
+% ==========================================
+% TABLE DES MATIÈRES
+% ==========================================
+    \newpage
+    \tableofcontents
+
+    \newpage
+    \listoffigures
+    \addcontentsline{toc}{chapter}{Liste des Figures}
+
+    \newpage
+    \listoftables
+    \addcontentsline{toc}{chapter}{Liste des Tableaux}
+
+% ==========================================
+% INTRODUCTION GÉNÉRALE
+% ==========================================
+    \chapter*{Introduction Générale}
+    \addcontentsline{toc}{chapter}{Introduction Générale}
+
+    L’essor des technologies mobiles a profondément transformer notre rapport à la santé et au bien-être.
+
+    Le projet \textbf{SmartLife} vise à développer un assistant intelligent combinant GPS, intelligence artificielle et suivi d’activités afin d’accompagner l’utilisateur dans ses habitudes quotidiennes.
+
+% ==========================================
+% CHAPITRE 1
+% ==========================================
+    \chapter{Contexte Général du Projet}
+
+    \section{Introduction}
+
+    Ce chapitre présente le contexte général du projet SmartLife, les problématiques identifiées et la solution proposée.
+
+% ==========================================
+% PRÉSENTATION DU PROJET
+% ==========================================
+    \section{Présentation du Projet}
+
+    \textbf{SmartLife} est une application mobile intelligente dédiée à l’amélioration des habitudes de vie grâce à l’intelligence artificielle.
+
+% ==========================================
+% PROBLÉMATIQUE
+% ==========================================
+    \subsection{Problématique}
+
+    \begin{enumerate}
+
+        \item Les applications classiques affichent des données sans recommandations intelligentes.
+
+        \item Les utilisateurs ont des difficultés à suivre leurs activités de manière continue.
+
+        \item Les interfaces actuelles manquent souvent d’ergonomie et d’interactivité.
+
+    \end{enumerate}
+
+% ==========================================
+% SOLUTION
+% ==========================================
+    \subsection{Solution Proposée}
+
+    \begin{table}[H]
+
+        \centering
+
+        \caption{Axes d’innovation de SmartLife}
+
+        \begin{tabularx}{\textwidth}{@{}l X@{}}
+
+\toprule
+
+\textbf{Composante} & \textbf{Description} \\
+
+\midrule
+
+Coach IA & Recommandations intelligentes via Groq API \\
+
+Suivi GPS & Tracking en temps réel \\
+
+Material 3 & Interface moderne et ergonomique \\
+
+OSMDroid & Cartographie dynamique libre \\
+
+\bottomrule
+
+        \end{tabularx}
+
+    \end{table}
+
+% ==========================================
+% PLANIFICATION
+% ==========================================
+    \section{Méthodologie et Planification}
+
+    \subsection{Diagramme de Gantt}
+
+    \begin{figure}[H]
+
+        \centering
+
+        \includegraphics[width=\textwidth]{gant_smartlife.png}
+
+        \caption{Diagramme de Gantt du projet SmartLife}
+
+        \label{fig:gantt}
+
+    \end{figure}
+
+% ==========================================
+% CONCLUSION
+% ==========================================
+    \section*{Conclusion}
+
+    Ce chapitre a présenté le contexte du projet ainsi que les principaux objectifs de SmartLife.
+
+% ==========================================
+% CHAPITRE 2
+% ==========================================
+    \chapter{Analyse et Conception}
+
+    \section*{Introduction}
+
+    La phase d'analyse et de conception constitue la colonne vertébrale de tout projet de développement logiciel. Elle permet de traduire les idées abstraites en spécifications techniques rigoureuses. Dans ce chapitre, nous explorons en détail les dimensions fonctionnelles et conceptuelles de \textbf{SmartLife}. Nous commençons par une étude des besoins pour définir \textit{ce que} le système doit faire, avant de passer à une étude conceptuelle qui modélise \textit{comment} il sera structuré à l'aide du langage UML (Unified Modeling Language).
+
+    \section{Étude Fonctionnelle}
+
+    L'étude fonctionnelle a pour but de recenser l'ensemble des interactions attendues entre l'utilisateur et l'application, tout en fixant les limites techniques du système.
+
+    \subsection{Analyse des besoins fonctionnels}
+
+    Les besoins fonctionnels décrivent les actions spécifiques que l'utilisateur doit pouvoir effectuer. Pour \textbf{SmartLife}, ces besoins ont été hiérarchisés comme suit :
+
+    \begin{itemize}
+        \item \textbf{Gestion du Profil et Authentification :} L'utilisateur doit pouvoir créer un compte sécurisé et gérer ses informations personnelles (nom, âge, objectifs de santé) pour une personnalisation optimale du Coach IA.
+        \item \textbf{Suivi d'Activité Physique en Temps Réel :} L'application doit exploiter les capteurs GPS pour enregistrer les déplacements, calculer la distance parcourue, la durée de l'effort et tracer le parcours sur une carte interactive.
+        \item \textbf{Assistance par Intelligence Artificielle (Coach IA) :} Un module de discussion permettant de poser des questions sur la nutrition ou l'entraînement, avec une analyse sémantique des données de l'utilisateur pour fournir des conseils sur mesure.
+        \item \textbf{Planification et Organisation :} Un système de calendrier (Schedule) permettant de prévoir des séances de sport ou des rappels de bien-être, avec une gestion précise des tâches quotidiennes.
+        \item \textbf{Historique et Statistiques :} Archivage des performances passées pour permettre à l'utilisateur de visualiser sa progression sur le long terme via des graphiques et des rapports détaillés.
+    \end{itemize}
+
+    \subsection{Analyse des besoins non fonctionnels}
+
+    Les besoins non fonctionnels définissent les qualités intrinsèques du système et ses contraintes d'exploitation :
+
+    \begin{itemize}
+        \item \textbf{Réactivité et Performance :} Les interactions avec le Coach IA doivent être fluides (latence minimale de l'API Groq). Le suivi GPS ne doit pas ralentir l'interface utilisateur grâce à l'utilisation de threads séparés.
+        \item \textbf{Efficacité Énergétique :} Le suivi GPS étant gourmand en ressources, une gestion optimisée du \textit{Foreground Service} est impérative pour préserver la batterie du smartphone.
+        \item \textbf{Ergonomie (UI/UX) :} L'interface doit respecter les standards \textbf{Material 3}, offrant un mode sombre/clair adaptatif et une navigation intuitive via une barre de navigation inférieure.
+        \item \textbf{Sécurité des Données :} Confidentialité des données de localisation et des échanges privés avec l'IA.
+    \end{itemize}
+
+    \section{Étude Conceptuelle}
+
+    \subsection{Règles de Gestion ❤️}
+
+    Les règles de gestion formalisent les contraintes métier qui dictent le comportement de l'application :
+
+    \begin{enumerate}
+        \item \textbf{RG1 :} Un utilisateur doit obligatoirement être connecté pour sauvegarder ses activités sur le cloud.
+        \item \textbf{RG2 :} Le calcul de la distance ne démarre que si la précision du signal GPS est inférieure à un seuil défini (ex: 20 mètres).
+        \item \textbf{RG3 :} Les conseils du Coach IA sont générés en priorité sur la base de la dernière activité enregistrée.
+        \item \textbf{RG4 :} Une tâche planifiée dans le calendrier doit contenir au moins un titre et une heure de début.
+        \item \textbf{RG5 :} L'historique des activités est trié par ordre antéchronologique (la plus récente en premier).
+    \end{enumerate}
+
+    \subsection{Diagrammes UML}
+
+    Pour garantir une architecture solide, nous avons utilisé trois diagrammes UML complémentaires.
+
+    \subsubsection{Cas d’utilisation}
+
+    Le diagramme de cas d'utilisation (Figure \ref{fig:usecase}) définit le périmètre du système.
+
+    \textbf{Analyse :} L'acteur principal est l'utilisateur final. On observe des acteurs secondaires tels que le "Système Android" (fournisseur des données GPS) et le "Service Groq AI" (moteur d'intelligence). Le diagramme montre que l'authentification est un préalable (relation \textit{include}) à la plupart des actions sensibles comme la consultation des rapports de bien-être ou la planification d'activités.
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.85\textwidth]{use case.png}
+        \caption{Diagramme de Cas d’Utilisation de SmartLife}
+        \label{fig:usecase}
+    \end{figure}
+
+    \subsubsection{Activité}
+
+    Le diagramme d'activity (Figure \ref{fig:activity}) modélise le flux dynamique d'un processus spécifique : l'interaction vocale.
+
+    \textbf{Analyse :} Le processus commence par l'activation du micro. Le système entre dans une phase de reconnaissance vocale (STT). Une bifurcation (décision) est présente : si aucun audio n'est détecté, une erreur s'affiche ; sinon, la requête est transmise au modèle LLM via l'API Groq. Le flux se termine par une double sortie : l'affichage textuel de la réponse et sa lecture par synthèse vocale (TTS), accompagnée d'une animation visuelle de l'avatar.
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.9\textwidth]{activite.png}
+        \caption{Diagramme d’Activité : Flux du Coach IA}
+        \label{fig:activity}
+    \end{figure}
+
+    \subsubsection{Classe}
+
+    Le diagramme de classes (Figure \ref{fig:class}) représente la structure statique des données et leurs relations.
+
+    \textbf{Analyse :} La classe pivot est \texttt{User}, qui possède une relation de composition avec \texttt{Schedule} (un emploi du temps unique par utilisateur) et une relation d'agrégation avec \texttt{Activity} (un utilisateur peut avoir plusieurs activités). On note également la présence de la classe \texttt{AICoach} qui traite les messages. Les multiplicités (1..*) indiquent clairement qu'un \texttt{Schedule} est composé de plusieurs \texttt{Tasks}, structurant ainsi finement la base de données.
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.85\textwidth]{classes.png}
+        \caption{Diagramme de Classes du Système}
+        \label{fig:class}
+    \end{figure}
+
+    \section*{Conclusion}
+
+    Ce chapitre a permis de passer d'une vision globale du projet à une structuration technique précise. En définissant des besoins fonctionnels clairs et en modélisant le système via UML, nous avons établi une feuille de route fiable pour la phase de réalisation. Cette conception garantit que l'application \textbf{SmartLife} sera non seulement complète, mais aussi évolutive et robuste face aux contraintes du développement mobile.
+
+% ==========================================
+% CHAPITRE 3 : ÉTUDE TECHNIQUE
+% ==========================================
+\chapter{Étude Technique}
+
+\section*{Introduction}
+
+La concrétisation de \textbf{SmartLife} repose sur une synergie entre une architecture logicielle moderne et des technologies de pointe. Ce chapitre détaille les choix techniques qui garantissent la robustesse, la fluidité et l'intelligence du système. Nous explorerons l'organisation du code source via l'architecture MVVM, les outils de développement utilisés, ainsi que les services critiques tels que le suivi géographique et l'IA.
+
+\section{Architecture du projet Mobile}
+
+Pour structurer le code source de l'application Android et faciliter sa maintenance évolutive, nous avons opté pour l'architecture \textbf{MVVM (Model-View-ViewModel)}. Cette approche permet une séparation nette entre l'interface utilisateur et la logique métier, structurée en quatre couches principales :
+
+\begin{itemize}
+    \item \textbf{La Vue (View) :} Composée des Activités et Fragments, elle se charge exclusivement de l'affichage. Elle utilise le \textit{Data Binding} pour observer les changements d'état du ViewModel.
+    \item \textbf{Le ViewModel :} Noyau décisionnel de la vue, il prépare les données et gère les états (chargement, succès, erreur). Il communique avec le Repository via des \textit{Coroutines} pour ne pas bloquer le thread principal.
+    \item \textbf{Le Repository :} Agit comme une façade de données. Il centralise les appels vers les sources locales (Room/SharedPrefs) et distantes (Retrofit).
+    \item \textbf{La Couche Service :} Comprend les composants d'arrière-plan comme le \texttt{GpsTrackingService}, qui est un \textit{Foreground Service} permettant de maintenir le suivi même si l'application est réduite.
+\end{itemize}
+
+\section{Infrastructure Backend (SmartLife API)}
+
+L'écosystème SmartLife repose sur un backend robuste situé dans le répertoire \texttt{SmartLife/SmartLife}, agissant comme le cerveau centralisé pour la persistance et le traitement lourd des données.
+
+\subsection{Serveur API avec FastAPI}
+Le backend est développé en \textbf{Python} à l'aide du framework \textbf{FastAPI}. Ce choix technologique permet de bénéficier de performances élevées grâce à l'asynchronisme natif (\textit{async/await}). L'API gère :
+\begin{itemize}
+    \item \textbf{Synchronisation des Profils :} Récupération et mise à jour des données utilisateurs après authentification via Firebase.
+    \item \textbf{Gestion des Calendriers :} Stockage et service des emplois du temps hebdomadaires (\textit{WeeklySchedule}).
+    \item \textbf{Collecte des Activités :} Centralisation des logs GPS et des statistiques de performance.
+\end{itemize}
+
+\subsection{Base de Données MongoDB}
+Pour la persistance des données, nous utilisons \textbf{MongoDB}, une base de données NoSQL orientée documents. Elle est particulièrement adaptée pour stocker des objets complexes comme les historiques de localisation ou les recommandations générées par l'IA. La connexion est établie via le pilote asynchrone \textbf{Motor}.
+
+\subsection{Service Intelligence Artificielle (Groq)}
+Le backend intègre un service dédié (\texttt{ai\_service.py}) qui interagit avec l'\textbf{API Groq} (modèles LLM type Llama 3). Ce service analyse le contexte de l'utilisateur (activités récentes, routine planifiée) pour :
+\begin{itemize}
+    \item Générer des \textit{insights} de santé (Score de discipline).
+    \item Fournir des réponses textuelles et vocales motivantes en temps réel.
+\end{itemize}
+
+\section{Technologies et Outils de Développement}
+
+Le stack technologique global a été sélectionné pour sa performance et son interopérabilité :
+
+\begin{itemize}
+    \item \textbf{Kotlin \& Coroutines :} Langage principal pour Android assurant sécurité et fluidité.
+    \item \textbf{Retrofit 2 \& OkHttp :} Consommation de l'API REST FastAPI avec gestion optimisée des requêtes.
+    \item \textbf{OSMDroid :} Cartographie OpenStreetMap pour le tracé des parcours sportifs.
+    \item \textbf{Firebase Ecosystem :}
+    \begin{itemize}
+        \item \textit{Firebase Auth :} Gestion sécurisée des sessions utilisateurs.
+        \item \textit{Firebase Cloud Messaging (FCM) :} Notifications push pilotées par le backend.
+    \end{itemize}
+\end{itemize}
+
+\section{Environnement de Travail}
+
+Le développement a été réalisé dans un écosystème optimisé :
+
+\begin{itemize}
+    \item \textbf{IDE :} \textbf{Android Studio Hedgehog} pour le mobile et \textbf{VS Code} pour le backend Python.
+    \item \textbf{Versionnement :} \textbf{Git} pour la collaboration et le suivi des fonctionnalités.
+\end{itemize}
+
+\section*{Conclusion}
+
+L'étude technique confirme que l'application \textbf{SmartLife} est un système complet où le mobile et le backend collaborent étroitement. L'utilisation du MVVM côté client et d'un backend FastAPI/MongoDB assure une expérience utilisateur réactive, tout en offrant une base solide pour l'intelligence artificielle intégrée.
+
+% ==========================================
+% CHAPITRE 4 : MISE EN ŒUVRE
+% ==========================================
+\chapter{Mise en œuvre}
+
+\section*{Introduction}
+
+Après avoir défini l'architecture et les technologies, ce chapitre détaille la phase concrète de réalisation de \textbf{SmartLife}. Nous présentons ici les interfaces finales de l'application, l'intégration des fonctionnalités clés et les processus de déploiement (DevOps) qui ont permis de rendre le système opérationnel.
+
+\section{Réalisation}
+
+La réalisation s'est articulée autour de la création d'une expérience utilisateur fluide et de l'interconnexion entre le mobile et le cloud.
+
+\subsection{Interface Utilisateur (UI/UX)}
+L'interface a été conçue selon les directives \textbf{Material 3}. Les principaux écrans incluent :
+\begin{itemize}
+    \item \textbf{Le Dashboard Coach :} Un espace interactif utilisant des \textit{CardViews} et des animations pour afficher les conseils de l'IA et le score de santé.
+    \item \textbf{Le Calendrier Intelligent :} Une liste dynamique permettant de gérer l'emploi du temps hebdomadaire, synchronisée en temps réel avec la base de données MongoDB.
+    \item \textbf{Le Suivi d'Activité :} Une carte intégrée via \textit{OSMDroid} affichant le tracé GPS en direct pendant l'effort.
+\end{itemize}
+
+\subsection{Intégration du Coach IA et Backend}
+Le cœur de l'intelligence repose sur la communication asynchrone :
+\begin{itemize}
+    \item \textbf{Côté Mobile :} Utilisation de \texttt{Retrofit} avec des convertisseurs JSON (Gson) pour envoyer les messages vocaux et recevoir les recommandations.
+    \item \textbf{Côté Backend :} Implémentation de services Python spécialisés (\texttt{ai\_service.py}) utilisant le SDK Groq pour traiter le contexte utilisateur et retourner des réponses structurées.
+\end{itemize}
+
+\subsection{Persistance et Services}
+La persistance locale est assurée par \textit{SharedPreferences} pour les réglages rapides, tandis que les données lourdes transitent par le backend. Le \texttt{GpsTrackingService} utilise des \textit{PendingIntents} et des notifications pour garantir la survie du processus en arrière-plan.
+
+\section{DevOps (Implémentation)}
+
+Le volet DevOps assure la stabilité et la reproductibilité de l'environnement de développement.
+
+\subsection{Configuration de l'Environnement}
+Le projet suit une structure modulaire :
+\begin{itemize}
+    \item \textbf{Backend :} Isolation des dépendances via un environnement virtuel Python (\texttt{.venv}) et gestion des secrets par un fichier \texttt{.env}.
+    \item \textbf{Firebase :} Configuration du fichier \texttt{google-services.json} côté mobile et de la clé de compte de service (\texttt{serviceAccountKey.json}) côté serveur pour les notifications.
+\end{itemize}
+
+\subsection{Déploiement et Tests}
+\begin{itemize}
+    \item \textbf{Connectivité :} Pour les tests sur appareil réel, le serveur FastAPI a été configuré pour écouter sur \texttt{0.0.0.0}, permettant une liaison directe via le réseau Wi-Fi local.
+    \item \textbf{Workflow Git :} Utilisation de commits atomiques pour suivre l'évolution de chaque fonctionnalité (ex: "feat: add GPS tracking logic").
+    \item \textbf{Validation :} Utilisation du \textit{Logcat} d'Android Studio et des journaux d'exécution d'Uvicorn pour le débogage croisé mobile/serveur.
+\end{itemize}
+
+\section*{Conclusion}
+
+La mise en œuvre de \textbf{SmartLife} a démontré l'efficacité du stack technologique choisi. L'intégration réussie de l'IA et des services de géolocalisation transforme l'application d'un simple outil de log en un véritable assistant proactif.
+
+% ==========================================
+% CONCLUSION GÉNÉRALE ET PERSPECTIVES
+% ==========================================
+\chapter*{Conclusion Générale et Perspectives}
+\addcontentsline{toc}{chapter}{Conclusion Générale et Perspectives}
+
+Le projet \textbf{SmartLife} a permis de concevoir et de réaliser un assistant de santé intelligent complet, alliant la puissance de l'IA à la précision de la géolocalisation mobile.
+
+Au cours de ce travail, nous avons pu relever plusieurs défis techniques, notamment la gestion des services d'arrière-plan, la synchronisation temps réel avec un backend NoSQL et l'intégration de modèles de langage (LLM) dans un flux mobile. L'architecture MVVM a prouvé sa valeur en assurant une séparation claire des responsabilités, facilitant ainsi le débogage et l'évolution du code.
+
+\paragraph{Perspectives :}
+L'application ouvre la voie à plusieurs évolutions futures :
+\begin{enumerate}
+    \item \textbf{Extension Wearables :} Porter l'application sur WearOS pour récupérer des données biométriques (fréquence cardiaque) en temps réel.
+    \item \textbf{Analyse Prédictive :} Utiliser les données historiques pour prédire les baisses de motivation et envoyer des encouragements proactifs.
+    \item \textbf{Mode Hors-ligne :} Implémentation d'une base de données Room locale pour permettre le suivi sans connexion internet, avec synchronisation ultérieure.
+\end{enumerate}
+
+En conclusion, SmartLife représente une étape vers une santé plus connectée et plus intelligente, mettant la technologie au service du bien-être quotidien.
+
+\end{document}

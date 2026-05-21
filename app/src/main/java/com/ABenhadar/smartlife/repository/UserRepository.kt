@@ -6,6 +6,7 @@ import com.ABenhadar.smartlife.models.UserData
 import com.ABenhadar.smartlife.models.UserResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import okhttp3.MultipartBody
 
 class UserRepository {
     private val apiService = RetrofitClient.getApiService()
@@ -50,6 +51,19 @@ class UserRepository {
             val response = apiService.updateUserFCMToken(uid, FcmTokenUpdate(token))
             if (response.status == "success") {
                 Result.success(response.message)
+            } else {
+                Result.failure(Exception(response.message))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun uploadProfileImage(uid: String, imagePart: MultipartBody.Part): Result<String> = withContext(Dispatchers.IO) {
+        try {
+            val response = apiService.uploadProfileImage(uid, imagePart)
+            if (response.status == "success") {
+                Result.success(response.data?.get("profileImageUrl") ?: "")
             } else {
                 Result.failure(Exception(response.message))
             }

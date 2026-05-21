@@ -92,20 +92,18 @@ class ActivityListFragment : Fragment() {
         lifecycleScope.launch(Dispatchers.IO) {
             try {
                 // Charger uniquement le programme planifié (Schedules)
-                // Note: On peut charger la semaine actuelle ou toutes les semaines si nécessaire
                 val schedule = try { apiService.getWeeklySchedule(userId) } catch (e: Exception) { null }
                 
                 val plannedActivities = mutableListOf<ActivityData>()
                 schedule?.days?.forEach { day ->
-                    // On utilise la date exacte du planning (YYYY-MM-DD) ou on calcule pour la semaine courante
                     val dayDate = day.date ?: getDateForWeekday(day.day_of_week)
                     day.items.forEach { item ->
                         plannedActivities.add(ActivityData(
                             user_id = userId,
                             type = item.activity_type,
                             location = Location(item.lat ?: 0.0, item.lng ?: 0.0),
-                            timestamp = "${dayDate}T${item.time}:00", // Format ISO pour le tri
-                            duration = item.duration,
+                            timestamp = "${dayDate}T${item.time}:00",
+                            duration = item.duration.toDouble(), // Convert Int to Double
                             locationName = item.location_name ?: "Lieu à définir"
                         ))
                     }
@@ -125,7 +123,6 @@ class ActivityListFragment : Fragment() {
         }
     }
 
-    // Calcule la date ISO pour un jour (ex: "Lundi") de la semaine en cours
     private fun getDateForWeekday(dayName: String): String {
         val calendar = Calendar.getInstance(Locale.FRANCE)
         calendar.firstDayOfWeek = Calendar.MONDAY

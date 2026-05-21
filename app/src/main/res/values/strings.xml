@@ -78,6 +78,15 @@
     <string name="loading_habits_msg">Chargement des habitudes...</string>
     <string name="no_habits_msg">Découverte de votre rythme de vie...</string>
 
+    <string name="label_track">Suivi</string>
+    <string name="label_plan">Planning</string>
+    <string name="label_coach">Coach</string>
+    <string name="label_wellness_score">Bien-être</string>
+    <string name="label_weekly_activity">Activité de la semaine</string>
+    <string name="label_coach_eye">L\'œil du coach</string>
+    <string name="label_last_session">Dernière session</string>
+    <string name="msg_routine_analysis">Analyse de votre routine...</string>
+
     <!-- Login/Register Strings -->
     <string name="login_welcome_back">Ravi de vous revoir !</string>
     <string name="login_subtitle">Connectez-vous pour retrouver votre compagnon.</string>
@@ -111,6 +120,7 @@
 
     <!-- Profile/Edit Strings -->
     <string name="profile_subtitle">Vos informations personnelles en un coup d\'œil.</string>
+    <string name="profile_picture_description">Photo de profil</string>
     <string name="edit_profile_subtitle">Mettez à jour vos informations pour une expérience plus précise.</string>
     <string name="onboarding_title">Bienvenue sur SmartLife</string>
     <string name="onboarding_desc">Votre compagnon bienveillant qui observe vos habitudes pour vous aider à vivre mieux, pas à pas.</string>

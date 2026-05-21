@@ -6,6 +6,7 @@ import android.view.View
 import android.widget.*
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import com.ABenhadar.smartlife.models.UserData
 import com.ABenhadar.smartlife.viewmodel.UserViewModel
 import com.google.firebase.auth.FirebaseAuth
 import java.text.SimpleDateFormat
@@ -75,9 +76,17 @@ class EditProfileActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
             
-            userId?.let {
-                userEmail?.let {
-                    viewModel.updateUser(it, userEmail, newFirstName, newLastName, newBirthDate)
+            userId?.let { uid ->
+                userEmail?.let { email ->
+                    val userData = UserData(
+                        uid = uid,
+                        email = email,
+                        firstName = newFirstName,
+                        lastName = newLastName,
+                        birthDate = newBirthDate,
+                        profileImageUrl = viewModel.currentUser.value?.profileImageUrl
+                    )
+                    viewModel.updateUser(uid, userData)
                 }
             }
         }

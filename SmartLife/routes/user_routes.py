@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, HTTPException, status, UploadFile, File
 from models import (
     UserData, UserResponse, SuccessResponse, ErrorResponse,
     ActivityData, HabitData, RecommendationData, VoiceLogData, FcmTokenUpdate, NamedLocation,
@@ -14,11 +14,52 @@ from bson import ObjectId
 from typing import List, Optional
 from pydantic import BaseModel
 from datetime import datetime, timedelta
+import os
+import shutil
+import time
 
 router = APIRouter(prefix="/api", tags=["smartlife"])
 
+# Dossier pour stocker les images (sera créé s'il n'existe pas)
+UPLOAD_DIR = "static/profile_images"
+os.makedirs(UPLOAD_DIR, exist_ok=True)
+
 class ChatRequest(BaseModel):
     message: str
+
+# --- PROFILE IMAGE UPLOAD ---
+
+@router.post("/upload_profile_image/{uid}", response_model=SuccessResponse)
+async def upload_profile_image(uid: str, image: UploadFile = File(...)):
+    # Vérifier si l'utilisateur existe
+    user = await users_collection.find_one({"uid": uid})
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    # Créer un nom de fichier unique ou fixe par utilisateur
+    extension = image.filename.split(".")[-1] if "." in image.filename else "jpg"
+    file_name = f"profile_{uid}.{extension}"
+    file_path = os.path.join(UPLOAD_DIR, file_name)
+
+    # Sauvegarder le fichier sur le serveur
+    with open(file_path, "wb") as buffer:
+        shutil.copyfileobj(image.file, buffer)
+
+    # URL accessible avec un timestamp pour éviter le cache client (Glide)
+    timestamp = int(time.time())
+    image_url = f"/static/profile_images/{file_name}?t={timestamp}"
+
+    # Mettre à jour MongoDB
+    await users_collection.update_one(
+        {"uid": uid},
+        {"$set": {"profileImageUrl": image_url}}
+    )
+
+    return {
+        "status": "success",
+        "message": "Profile image uploaded successfully",
+        "data": {"profileImageUrl": image_url}
+    }
 
 # --- SCHEDULE ENDPOINTS ---
 
@@ -117,5 +158,7 @@ async def get_ai_insights(user_id: str):
 
 @router.post("/ai_chat/{user_id}")
 async def ai_chat(user_id: str, request: ChatRequest):
+    # Correction: call actual service logic if needed, but here we just simulate
+    from services.ai_service import get_chat_response
     response = await get_chat_response(user_id, request.message)
     return {"status": "success", "response": response}

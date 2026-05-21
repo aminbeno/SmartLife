@@ -14,7 +14,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="20dp">
+            android:padding="20dp"
+            android:baselineAligned="false">
 
             <!-- Header avec Statut et Profil -->
             <RelativeLayout
@@ -25,13 +26,14 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:layout_toStartOf="@id/ivUserAvatar"
-                    android:layout_alignParentStart="true">
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true">
                     <TextView
                         android:id="@+id/tvGreeting"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/home_greeting"
-                        android:textSize="26sp"
+                        android:textSize="24sp"
                         android:fontFamily="sans-serif-medium"
                         android:textColor="?attr/colorPrimary" />
                     <LinearLayout
@@ -39,11 +41,11 @@
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
                         android:gravity="center_vertical"
-                        android:layout_marginTop="2dp">
+                        android:layout_marginTop="4dp">
                         <View
                             android:id="@+id/vStatusIndicator"
-                            android:layout_width="10dp"
-                            android:layout_height="10dp"
+                            android:layout_width="8dp"
+                            android:layout_height="8dp"
                             android:background="@drawable/ic_round_info_24"
                             android:alpha="0.3" />
                         <TextView
@@ -52,7 +54,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginStart="8dp"
                             android:alpha="0.6"
-                            android:textSize="13sp" />
+                            android:textSize="12sp" />
                     </LinearLayout>
                 </LinearLayout>
                 <com.google.android.material.imageview.ShapeableImageView
@@ -61,7 +63,8 @@
                     android:layout_height="52dp"
                     android:layout_alignParentEnd="true"
                     android:src="@mipmap/ic_logo"
-                    android:padding="2dp"
+                    android:scaleType="fitCenter"
+                    android:padding="4dp"
                     android:contentDescription="@string/profile_title"
                     app:strokeWidth="1.5dp"
                     app:strokeColor="?attr/colorPrimary"
@@ -93,8 +96,8 @@
                         app:fabSize="mini"
                         app:elevation="2dp"
                         android:clickable="false"
-                        android:contentDescription="@string/activities_label" />
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Suivi" android:textSize="11sp" android:layout_marginTop="4dp"/>
+                        android:contentDescription="@string/label_track" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/label_track" android:textSize="11sp" android:layout_marginTop="4dp"/>
                 </LinearLayout>
 
                 <LinearLayout
@@ -114,8 +117,8 @@
                         app:fabSize="mini"
                         app:elevation="2dp"
                         android:clickable="false"
-                        android:contentDescription="@string/today_planning_label" />
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Planning" android:textSize="11sp" android:layout_marginTop="4dp"/>
+                        android:contentDescription="@string/label_plan" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/label_plan" android:textSize="11sp" android:layout_marginTop="4dp"/>
                 </LinearLayout>
 
                 <LinearLayout
@@ -135,12 +138,12 @@
                         app:fabSize="mini"
                         app:elevation="2dp"
                         android:clickable="false"
-                        android:contentDescription="Coach" />
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Coach" android:textSize="11sp" android:layout_marginTop="4dp"/>
+                        android:contentDescription="@string/label_coach" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/label_coach" android:textSize="11sp" android:layout_marginTop="4dp"/>
                 </LinearLayout>
             </LinearLayout>
 
-            <!-- Wellness Grid: Score de bien-être et Progression activité -->
+            <!-- Wellness Grid -->
             <GridLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -154,7 +157,7 @@
                     android:layout_height="wrap_content"
                     android:layout_columnWeight="1"
                     android:layout_margin="6dp"
-                    app:cardCornerRadius="24dp"
+                    app:cardCornerRadius="20dp"
                     app:cardElevation="0dp"
                     app:cardBackgroundColor="?attr/colorSecondaryContainer">
                     <LinearLayout
@@ -167,7 +170,7 @@
                             android:id="@+id/pbHealthScore"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            app:indicatorSize="48dp"
+                            app:indicatorSize="44dp"
                             app:trackThickness="4dp"
                             android:progress="0" />
                         <TextView
@@ -175,7 +178,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="8dp"
-                            android:text="Bien-être"
+                            android:text="@string/label_wellness_score"
                             android:textSize="12sp"
                             android:textStyle="bold"
                             android:textColor="?attr/colorOnSecondaryContainer" />
@@ -188,7 +191,7 @@
                     android:layout_height="wrap_content"
                     android:layout_columnWeight="1"
                     android:layout_margin="6dp"
-                    app:cardCornerRadius="24dp"
+                    app:cardCornerRadius="20dp"
                     app:cardElevation="0dp"
                     app:cardBackgroundColor="?attr/colorTertiaryContainer">
                     <LinearLayout
@@ -201,7 +204,7 @@
                             android:id="@+id/pbActivityGoal"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            app:indicatorSize="48dp"
+                            app:indicatorSize="44dp"
                             app:trackThickness="4dp"
                             app:indicatorColor="?attr/colorTertiary"
                             android:progress="0" />
@@ -218,7 +221,7 @@
                 </com.google.android.material.card.MaterialCardView>
             </GridLayout>
 
-            <!-- Hebdo Activity Bar Chart (Simple) -->
+            <!-- Hebdo Activity Bar Chart -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -234,14 +237,14 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Activité de la semaine"
+                        android:text="@string/label_weekly_activity"
                         android:textSize="14sp"
                         android:textStyle="bold"
                         android:alpha="0.7" />
                     <LinearLayout
                         android:id="@+id/llWeeklyChart"
                         android:layout_width="match_parent"
-                        android:layout_height="100dp"
+                        android:layout_height="120dp"
                         android:layout_marginTop="16dp"
                         android:gravity="bottom"
                         android:orientation="horizontal" />
@@ -282,12 +285,12 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- L'œil du coach -->
+            <!-- Coach Insight -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="32dp"
-                android:text="L'œil du coach"
+                android:text="@string/label_coach_eye"
                 android:textSize="18sp"
                 android:textStyle="bold" />
             <TextView
@@ -295,16 +298,16 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:text="Analyse de votre routine..."
+                android:text="@string/msg_routine_analysis"
                 android:alpha="0.7"
                 android:lineSpacingExtra="2dp" />
 
-            <!-- Dernière Activité Réelle -->
+            <!-- Last Activity -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="32dp"
-                android:text="Dernière session"
+                android:text="@string/label_last_session"
                 android:textSize="18sp"
                 android:textStyle="bold" />
             <com.google.android.material.card.MaterialCardView
@@ -327,7 +330,7 @@
                         android:layout_height="36dp"
                         android:src="@drawable/ic_round_directions_run_24"
                         app:tint="?attr/colorPrimary"
-                        android:contentDescription="Dernière activité" />
+                        android:contentDescription="@string/label_last_session" />
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -338,13 +341,11 @@
                             android:id="@+id/tvLastActTitle"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Marche"
                             android:textStyle="bold" />
                         <TextView
                             android:id="@+id/tvLastActDetails"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="..."
                             android:textSize="12sp"
                             android:alpha="0.7" />
                     </LinearLayout>
@@ -365,36 +366,6 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:layout_marginTop="12dp" />
-
-            <TextView
-                android:id="@+id/tvNoSchedule"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="24dp"
-                android:text="@string/free_day_msg"
-                android:textAlignment="center"
-                android:alpha="0.5"
-                android:visibility="gone" />
-
-            <!-- Lieux favoris (Chips) -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="32dp"
-                android:text="@string/frequent_places_label"
-                android:textSize="18sp"
-                android:textStyle="bold" />
-            <HorizontalScrollView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:scrollbars="none">
-                <com.google.android.material.chip.ChipGroup
-                    android:id="@+id/cgFrequentPlaces"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:singleLine="true" />
-            </HorizontalScrollView>
 
             <View android:layout_width="match_parent" android:layout_height="100dp" />
 

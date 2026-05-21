@@ -10,6 +10,7 @@ class UserData(BaseModel):
     lastName: str
     birthDate: str
     fcmToken: Optional[str] = None
+    profileImageUrl: Optional[str] = None
 
 class UserResponse(BaseModel):
     uid: str
@@ -18,6 +19,7 @@ class UserResponse(BaseModel):
     lastName: str
     birthDate: str
     fcmToken: Optional[str] = None
+    profileImageUrl: Optional[str] = None
     id: Optional[str] = Field(None, alias="_id")
 
 class FcmTokenUpdate(BaseModel):

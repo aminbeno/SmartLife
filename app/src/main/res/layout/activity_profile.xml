@@ -19,7 +19,24 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="24dp">
+            android:padding="24dp"
+            android:gravity="center_horizontal">
+
+            <!-- User Avatar -->
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/ivUserAvatarProfile"
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                android:layout_marginTop="24dp"
+                android:layout_marginBottom="24dp"
+                android:src="@mipmap/ic_logo"
+                android:scaleType="centerCrop"
+                android:clickable="true"
+                android:focusable="true"
+                android:contentDescription="@string/profile_picture_description"
+                app:strokeWidth="2dp"
+                app:strokeColor="?attr/colorPrimary"
+                app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.Corner.Full" />
 
             <TextView
                 android:id="@+id/tvProfileTitle"

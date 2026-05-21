@@ -8,7 +8,8 @@ data class UserData(
     val email: String,
     val firstName: String,
     val lastName: String,
-    val birthDate: String
+    val birthDate: String,
+    val profileImageUrl: String? = null
 )
 
 data class UserResponse(
@@ -17,6 +18,7 @@ data class UserResponse(
     val firstName: String,
     val lastName: String,
     val birthDate: String,
+    val profileImageUrl: String? = null,
     @SerializedName("_id")
     val id: String? = null
 )
@@ -35,7 +37,7 @@ data class ActivityData(
     val type: String,
     val location: Location,
     val timestamp: String? = null,
-    val duration: Int,
+    val duration: Double,
     val locationName: String? = null
 )
 

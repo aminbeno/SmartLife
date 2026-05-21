@@ -80,9 +80,9 @@ class GpsTrackingService : Service() {
         serviceScope.launch {
             val activityData = ActivityData(
                 user_id = userId,
-                type = "walking", // Default type, can be improved with activity recognition
+                type = "walking", // Default type
                 location = MyLocation(location.latitude, location.longitude),
-                duration = 0 // Not applicable for single points
+                duration = 0.0 // Corrected to Double
             )
             repository.saveActivity(activityData)
                 .onSuccess { Log.d("GpsTrackingService", "Location sent successfully") }

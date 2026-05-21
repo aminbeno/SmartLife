@@ -1,6 +1,7 @@
 package com.ABenhadar.smartlife.api
 
 import com.ABenhadar.smartlife.models.*
+import okhttp3.MultipartBody
 import retrofit2.Response
 import retrofit2.http.*
 
@@ -21,12 +22,19 @@ interface SmartLifeApiService {
     @PUT("api/user/{uid}/fcm-token")
     suspend fun updateUserFCMToken(@Path("uid") uid: String, @Body tokenUpdate: FcmTokenUpdate): SuccessResponse<Map<String, String>>
 
+    @Multipart
+    @POST("api/upload_profile_image/{uid}")
+    suspend fun uploadProfileImage(
+        @Path("uid") uid: String,
+        @Part image: MultipartBody.Part
+    ): SuccessResponse<Map<String, String>>
+
     // --- ACTIVITY APIs ---
     @POST("api/activity")
     suspend fun addActivity(@Body activity: ActivityData): SuccessResponse<Map<String, String>>
 
     @GET("api/activities/{user_id}")
-    suspend fun getActivities(@Path("user_id") userId: String): List<ActivityData>
+    suspend fun getActivities(@Path("user_id") userId: String): SuccessResponse<List<ActivityData>>
 
     // --- HABITS APIs ---
     @GET("api/habits/{user_id}")
